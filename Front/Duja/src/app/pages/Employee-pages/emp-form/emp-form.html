@@ -1,0 +1,138 @@
+<div class="form-container">
+    <button type="button" (click)="goBack()" class="back-button-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+        </svg>
+    </button>
+    <h2> {{isEditable? 'Edit Employee' : 'Add New Employee '}}</h2>
+
+    <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="userName" class="form-label">Username</label>
+                <input type="text" id="userName" class="form-control" formControlName="userName">
+                <div>
+                    @if(employeeForm.get('userName')?.invalid && employeeForm.get('userName')?.touched){
+                    @if(employeeForm.get('userName')?.hasError('required')){
+                    <span class="text-danger"> Username is required </span>
+                    }
+                    }
+                </div>
+            </div>
+            @if(!isEditable){
+            <div class="col-md-6 mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" id="password" class="form-control" formControlName="password">
+                <div>
+                    @if(employeeForm.get('password')?.invalid && employeeForm.get('password')?.touched){
+                    @if(employeeForm.get('password')?.hasError('required')){
+                    <span class="text-danger"> Password is required </span>
+                    }
+                    }
+                </div>
+            </div>
+            }
+        </div>
+
+        <hr>
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+                <label for="fullName" class="form-label">Full Name</label>
+                <input type="text" id="fullName" class="form-control" formControlName="fullName">
+                <div>
+                    @if(employeeForm.get('fullName')?.invalid && employeeForm.get('fullName')?.touched){
+                    @if(employeeForm.get('fullName')?.hasError('required')){
+                    <span class="text-danger"> Full Name is required </span>
+                    }
+                    }
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="roleID" class="form-label">Role</label>
+                <select id="roleID" class="form-select" formControlName="roleID">
+                    <option value="" disabled>Select a Role</option>
+
+                    @for( item of Roles ; track item.id ){
+                    <option [value]="item.id">{{item.name}}</option>
+                    }
+                </select>
+                @if(employeeForm.get('roleID')?.invalid && employeeForm.get('roleID')?.touched){
+                @if(employeeForm.get('roleID')?.hasError('required')){
+                <span class="text-danger"> Role is required </span>
+                }
+                }
+            </div>
+
+            <div class="col-12 mb-3">
+                <label for="address" class="form-label">Address</label>
+                <input type="text" id="address" class="form-control" formControlName="address">
+                @if(employeeForm.get('address')?.invalid && employeeForm.get('address')?.touched){
+                @if(employeeForm.get('address')?.hasError('required')){
+                <span class="text-danger"> Address is required </span>
+                }
+                }
+            </div>
+
+            <div class="col-12 mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" class="form-control" formControlName="email">
+                @if(employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched){
+                @if(employeeForm.get('email')?.hasError('required')){
+                <span class="text-danger"> Email is required </span>
+                }
+                @if (employeeForm.get('email')?.hasError('email')){
+                <span class="text-danger"> Email invalid </span>
+                }
+                }
+            </div>
+
+            <div class="col-12 mb-3">
+                <label for="phoneNumber" class="form-label">PhoneNumber : </label>
+                <input type="text" id="phoneNumber" class="form-control" formControlName="phoneNumber">
+                @if(employeeForm.get('phoneNumber')?.invalid && employeeForm.get('phoneNumber')?.touched){
+                @if(employeeForm.get('phoneNumber')?.hasError('required')){
+                <span class="text-danger"> PhoneNumber is required </span>
+                }
+                }
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="birthdate" class="form-label">Birthdate</label>
+                <input type="date" id="birthdate" class="form-control" formControlName="birthdate">
+                @if(employeeForm.get('birthdate')?.invalid && employeeForm.get('birthdate')?.touched){
+                @if(employeeForm.get('birthdate')?.hasError('required')){
+                <span class="text-danger"> Birthdate is required </span>
+                }
+                }
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="hireDate" class="form-label">Hire Date</label>
+                <input type="date" id="hireDate" class="form-control" formControlName="hireDate">
+                @if(employeeForm.get('hireDate')?.invalid && employeeForm.get('hireDate')?.touched){
+                @if(employeeForm.get('hireDate')?.hasError('required')){
+                <span class="text-danger"> HireDate is required </span>
+                }
+                }
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="salary" class="form-label">Salary</label>
+                <input type="number" id="salary" class="form-control" formControlName="salary">
+                @if(employeeForm.get('salary')?.invalid && employeeForm.get('salary')?.touched){
+                @if(employeeForm.get('salary')?.hasError('required')){
+                <span class="text-danger"> Salary is required </span>
+                }
+                }
+            </div>
+        </div>
+
+        <button type="submit" class="btn-black py-2 mt-5 w-100" [disabled]="employeeForm.invalid">
+            Save 
+        </button>
+    </form>
+</div>

@@ -1,0 +1,47 @@
+/* --- Global Styles --- */
+.hover-underline:hover {
+  text-decoration: underline !important;
+}
+
+/* --- Quantity Stepper --- */
+.quantity-wrapper {
+  background-color: #fff;
+  border-color: #e0e0e0 !important;
+}
+
+.quantity-wrapper input:focus {
+  box-shadow: none;
+}
+
+/* --- Black Button (Standardized) --- */
+.btn-black {
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #000;
+  transition: all 0.2s;
+}
+
+.btn-black:hover {
+  background-color: #333;
+  border-color: #333;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Fade In Animation --- */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

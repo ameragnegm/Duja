@@ -1,0 +1,40 @@
+<div class="container-fluid" style="min-height: 80vh;">
+
+    <div class="d-flex justify-content-center mt-5 ">
+
+        <ul class="nav nav-pills gap-2 p-2 bg-white rounded shadow-sm border d-inline-flex flex-wrap">
+
+            <li class="nav-item">
+                <a routerLink="products" routerLinkActive="active" class="nav-link d-flex align-items-center px-4">
+                    <i class="bi bi-box-seam-fill me-2"></i> Products
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a routerLink="orders" routerLinkActive="active"
+                    class="nav-link d-flex align-items-center px-4 position-relative">
+                    <i class="bi bi-cart-check-fill me-2"></i> Orders
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a routerLink="ads" routerLinkActive="active" class="nav-link d-flex align-items-center px-4">
+                    <i class="bi bi-megaphone-fill me-2"></i> Ads & Banners
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a routerLink="employees" routerLinkActive="active" class="nav-link d-flex align-items-center px-4">
+                    <i class="bi bi-people-fill me-2"></i> Employees
+                </a>
+            </li>
+
+        </ul>
+
+    </div>
+
+    <div class="p-4">
+        <router-outlet></router-outlet>
+    </div>
+
+</div>

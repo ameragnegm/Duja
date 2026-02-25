@@ -1,0 +1,6 @@
+@Duja_HostAddress = http://localhost:5067
+
+GET {{Duja_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

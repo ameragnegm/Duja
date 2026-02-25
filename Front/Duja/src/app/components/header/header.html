@@ -1,0 +1,107 @@
+<nav class="navbar fixed-top p-3" [class.scrolled-active]="isScrolled" style="background: transparent;">
+    <div class="container d-flex justify-content-between align-items-center ">
+
+        @if(isScrolled){
+        <a class="navbar-brand m-0 p-0" routerLink="/">
+            <img src="assets/translogo.png" alt="Logo" style="height: 35px; width: auto;">
+        </a>
+
+        }
+
+        <div class="d-flex flex-row align-items-center justify-content-end gap-3 me-1 ms-auto">
+
+            <button class="btn btn-link text-dark p-0 border-0" (click)="openSearch()">
+                <i class="bi bi-search fs-4"></i>
+            </button>
+
+            <a routerLink="/cart" class="text-dark position-relative p-0">
+                <i class="bi bi-cart fs-4"></i>
+            </a>
+
+            <a class="nav-link" href="/manage" title="Management Dashboard">
+                <i class="bi bi-grid-fill fs-5"></i>
+            </a>
+
+            <a routerLink="/login" class="text-dark p-0">
+                <i class="bi bi-person fs-4"></i>
+            </a>
+
+        </div>
+
+    </div>
+</nav>
+@if (isSearchActive) {
+<div class="search-overlay d-flex flex-column bg-light">
+
+    <div class="container pt-4 pb-2">
+        <div class="d-flex align-items-center pb-2">
+            <button class="btn btn-link btn-back text-dark p-0 me-4 text-decoration-none d-flex align-items-center"
+                (click)="closeSearch()">
+                <i class="bi bi-arrow-left fs-2 me-2"></i>
+            </button>
+
+            <i class="bi bi-search text-muted fs-5 ms-3"></i>
+
+            <input type="text" class="form-control border-0 search-input flex-grow-1 h-100"
+                placeholder="Search for items..." (input)="onSearch($event)" [value]="searchQuery" autofocus>
+        </div>
+    </div>
+
+    <div class="container mt-4 pb-5 flex-grow-1 overflow-auto">
+
+        @if (searchQuery.length > 0 && searchResults.length === 0) {
+        <div class="text-center mt-5 pt-5">
+            <p class="text-muted fs-5">We couldn't find matches for "<b>{{ searchQuery }}</b>"</p>
+            <button class="btn btn-dark rounded-pill px-4 mt-3" (click)="searchQuery = ''; searchResults = AllProducts">
+                View All Products
+            </button>
+        </div>
+        }
+
+        @if (searchResults.length > 0) {
+
+        <p class="text-muted small text-uppercase fw-bold mb-3">
+            {{ searchQuery.length === 0 ? 'All Products' : 'Search Results' }}
+        </p>
+
+        <div class="row g-4">
+            @for (product of searchResults; track product.id) {
+            <div class="col-12 col-md-6 col-lg-4">
+                <a [routerLink]="['/product', product.id]" (click)="closeSearch()" class="text-decoration-none">
+
+                    <div class="search-card rounded-3 p-3 d-flex align-items-center h-100 bg-white shadow-sm">
+
+                        <img [src]="apiBaseUrl + (product.images?.[0]?.imageUrl?.startsWith('/') ? '' : '/') + product.images?.[0]?.imageUrl"
+                            class="product-img rounded-3" style="width: 80px; height: 80px; object-fit: cover;"
+                            alt="Product">
+
+                        <div class="ms-3 flex-grow-1" style="min-width: 0;">
+                            <h6 class="text-dark mb-1 fw-bold text-truncate">{{ product.name }}</h6>
+
+                            <div class="d-flex align-items-center justify-content-between mt-2">
+
+                                <div class="flex-grow-1 me-2" style="min-width: 0;">
+                                    <p class="text-muted small mb-0 text-truncate">
+                                        {{ product.description }}
+                                    </p>
+                                </div>
+
+                                <div class="flex-shrink-0">
+                                    <p class="text-dark fw-bold mb-0 text-nowrap">
+                                        {{ product.price }} EGP
+                                    </p>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </a>
+            </div>
+            }
+        </div>
+        }
+
+    </div>
+</div>
+}

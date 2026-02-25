@@ -1,0 +1,189 @@
+<div class="container py-5">
+
+  @if (isLoading) {
+    <div class="loading-container d-flex justify-content-center align-items-center" style="min-height: 400px;">
+      <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } 
+  
+  @else if (order) {
+    
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+      <div>
+        <h2 class="fw-bold mb-0 text-dark">ORDER #{{ order.id }}</h2>
+        <span class="badge rounded-pill mt-2" 
+              [ngClass]="{
+                'bg-warning text-dark': order.status === 'Pending',
+                'bg-info text-dark': order.status === 'Processing',
+                'bg-primary': order.status === 'Shipped',
+                'bg-success': order.status === 'Delivered',
+                'bg-danger': order.status === 'Canceled'
+              }">
+          {{ order.status }}
+        </span>
+      </div>
+      
+      @if (order.status === 'Pending') {
+        <button class="btn btn-outline-danger px-4 py-2 rounded-3 d-flex align-items-center gap-2 transition-btn" 
+                (click)="DeleteCurrentOrder()">
+          <i class="bi bi-trash"></i> 
+          <span>Delete Order</span>
+        </button>
+      }
+    </div>
+
+    <div class="row g-4">
+      
+      <div class="col-lg-8">
+        <h5 class="fw-bold mb-3 text-secondary">Items ({{ orderItems.length }})</h5>
+
+        <div class="d-flex flex-column gap-3">
+          @for (item of orderItems; track item.id) {
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden item-card">
+              <div class="card-body p-0">
+                <div class="row g-0 align-items-center">
+                  
+                  <div class="col-4 col-md-2">
+                    <div class="bg-light h-100 d-flex align-items-center justify-content-center" style="min-height: 100px;">
+                      <img [src]="global.getImageUrl(item.productImage)"
+                           class="img-fluid  object-fit-cover" 
+                       
+                           alt="Product">
+                    </div>
+                  </div>
+
+                  <div class="col-8 col-md-10 p-3 p-md-4">
+                    <div class="row align-items-center h-100">
+                      
+                      <div class="col-md-6 mb-2 mb-md-0">
+                        <h6 class="fw-bold text-dark mb-1">{{ item.productName || 'Product Name' }}</h6>
+                        <div class="d-flex gap-2 text-muted small">
+                          <span class="badge bg-light text-dark border">Size: {{ item.size }}</span>
+                          <span class="badge bg-light text-dark border">Color: {{ item.color }}</span>
+                        </div>
+                      </div>
+
+                      <div class="col-md-3 text-md-center mb-2 mb-md-0">
+                        <div class="text-muted small">Price</div>
+                        <div class="fw-bold">{{ item.unitPrice | currency:'EGP ' }}</div>
+                        <div class="text-muted small">x {{ item.quantity }}</div>
+                      </div>
+
+                      <div class="col-md-3 text-md-end">
+                        <div class="text-muted small">Subtotal</div>
+                        <div class="fw-bold text-danger fs-5">{{ item.unitPrice * item.quantity | currency:'EGP ' }}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          }
+
+          @if (orderItems.length === 0) {
+            <div class="card border-0 shadow-sm p-5 text-center text-muted rounded-4">
+              <i class="bi bi-basket3 fs-1 d-block mb-2"></i>
+              No items found in this order.
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+      
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+          <div class="card-body p-4">
+            <h6 class="text-uppercase text-muted small fw-bold mb-4">Order Summary</h6>
+            
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Placed On</span>
+              <span class="fw-bold">{{ order.orderDate | date:'mediumDate' }}</span>
+            </div>
+            
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Subtotal</span>
+              <span>{{ order.totalAmount - order.delivery | currency:'EGP ' }}</span>
+            </div>
+            
+            <div class="d-flex justify-content-between mb-3">
+              <span class="text-muted">Delivery</span>
+              <span>{{ order.delivery | currency:'EGP ' }}</span>
+            </div>
+
+            <hr class="text-muted opacity-25">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <span class="fw-bold fs-5">Total</span>
+              <span class="fw-bold fs-3 text-black">{{ order.totalAmount | currency:'EGP ' }}</span>
+            </div>
+            
+            <div class="bg-light rounded-3 p-3 mb-4">
+              <div class="d-flex justify-content-between mb-1">
+                <span class="small text-muted">Paid Amount</span>
+                <span class=" fw-bold text-success">{{ order.paidAmount | currency:'EGP ' }}</span>
+              </div>
+              <div class="d-flex justify-content-between">
+                <span class="small text-muted">Remaining Due</span>
+                <span class=" fw-bold text-danger">{{ order.remainingAmount | currency:'EGP ' }}</span>
+              </div>
+            </div>
+
+            @if (order.status === 'Pending') {
+              <button class="btn btn-black w-100 py-3 rounded-3 fw-bold shadow-sm d-flex justify-content-center align-items-center gap-2 mb-3"
+                      (click)="ConfirmOrder()">
+                <i class="bi bi-check-circle-fill"></i>
+                Confirm Order
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4">
+          <div class="card-body p-4">
+            <h6 class="text-uppercase text-muted small fw-bold mb-3">Shipping Details</h6>
+            
+            <div class="d-flex gap-3 mb-3">
+              <div class=" bg-opacity-10 p-2 rounded-circle text-black" style="width: 40px; height: 40px; display: grid; place-items: center;">
+                <i class="bi bi-geo-alt-fill"></i>
+              </div>
+              <div>
+                <span class="d-block fw-bold text-dark">Address</span>
+                <span class="text-muted small">{{ order.address }}</span>
+              </div>
+            </div>
+
+            <div class="d-flex gap-3 mb-3">
+              <div class=" bg-opacity-10 p-2 rounded-circle text-black" style="width: 40px; height: 40px; display: grid; place-items: center;">
+                 <i class="bi bi-person-fill"></i>
+              </div>
+              <div>
+                <span class="d-block fw-bold text-dark">Customer</span>
+                <span class="text-muted small">{{ order.ownerName }}</span>
+              </div>
+            </div>
+
+            <div class="d-flex gap-3">
+              <div class="bg-opacity-10 p-2 rounded-circle text-black" style="width: 40px; height: 40px; display: grid; place-items: center;">
+                <i class="bi bi-telephone-fill"></i>
+              </div>
+              <div>
+                <span class="d-block fw-bold text-dark">Phone</span>
+                <span class="text-muted small">{{ order.ownerPhone }}</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div> 
+    </div> 
+  } @else {
+    <div class="text-center py-5">
+      <h3 class="text-muted">Order not found</h3>
+      <button class="btn btn-primary mt-3" routerLink="/order">Go Back</button>
+    </div>
+  }
+</div>

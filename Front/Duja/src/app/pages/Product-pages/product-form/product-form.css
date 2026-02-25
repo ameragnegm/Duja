@@ -1,0 +1,230 @@
+/* -- Host & Container Styling -- */
+:host {
+  display: block;
+  padding: 2rem 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2.5rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.09);
+  border: 1px solid #e9ecef;
+}
+
+/* -- Typography -- */
+h2 {
+  text-align: center;
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 2rem;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #495057;
+}
+
+/* -- Input & Select Styling -- */
+.form-control,
+.form-select {
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  border-color: #ced4da;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+/* Add a subtle blue glow on focus to match Bootstrap's primary color */
+.form-control:focus,
+.form-select:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Style for invalid fields */
+.form-control.ng-invalid.ng-touched,
+.form-select.ng-invalid.ng-touched {
+  border-color: #dc3545; /* Bootstrap's danger color */
+}
+
+/* -- Button Styling -- */
+.btn-primary {
+  padding: 0.8rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border-radius: 8px;
+  margin-top: 1rem;
+}/* Add this to emp-form.css */
+
+.back-arrow {
+    font-size: 2rem; /* Makes the arrow bigger */
+    font-weight: bold;
+    color: #555; /* A dark grey color, you can change this */
+    
+    /* This makes it a clickable hand icon on hover */
+    cursor: pointer; 
+    
+    /* Positioning */
+    display: block;
+    margin-bottom: 10px;
+    width: fit-content; /* Makes the clickable area only as big as the arrow */
+}
+
+.back-arrow:hover {
+    color: #000; /* Darkens on hover */
+}
+
+/* This is your existing container */
+.form-container {
+    position: relative; /* This is needed to contain the arrow */
+    padding-top: 20px;
+}/* This is required on the parent container. 
+  It "contains" the absolutely positioned button.
+*/
+.form-container {
+    position: relative;
+    /* You probably already have padding, but add it if not */
+    padding: 2rem; 
+}
+
+/* This is the new button style */
+.back-button-circle {
+    /* Positioning */
+    position: absolute;
+    top: 24px;
+    left: 24px;
+
+    /* Shape and Size */
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* This makes it a perfect circle */
+    
+    /* Style */
+    border: none; /* Remove default button border */
+    background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* Nice floating shadow */
+    
+    /* Center the icon inside */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Interaction */
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+}
+
+/* Style for the SVG icon inside the button */
+.back-button-circle svg {
+    width: 24px; /* Size of the arrow */
+    height: 24px;
+    color: #333; /* Color of the arrow */
+}
+
+/* Hover Effect */
+.back-button-circle:hover {
+    background-color: #f5f5f5; /* Light grey background on hover */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Stronger shadow */
+}/* --- New Two-Column Layout --- */
+.form-grid-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr; /* Left col (images) is 1 part, Right col (data) is 1.5 parts */
+  gap: 2.5rem; /* Space between the columns */
+}
+
+/* --- Image Section Styling --- */
+.image-section {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  height: fit-content; /* Only be as tall as its content */
+}
+
+.image-section h4 {
+  font-weight: 600;
+  color: #212529;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* Make image section "sticky" on large screens */
+@media (min-width: 992px) {
+  .image-section {
+    position: sticky;
+    top: 2rem; /* Stick to the top, with 2rem padding from viewport */
+  }
+}
+
+/* --- Responsive styles for small screens --- */
+@media (max-width: 991.98px) {
+  .form-grid-layout {
+    /* Stack the columns on top of each other */
+    grid-template-columns: 1fr;
+  }
+  
+  .image-section {
+    margin-bottom: 2rem; /* Add space between sections when stacked */
+  }
+}
+
+/* --- Image Gallery & Previews --- */
+.existing-images-gallery {
+  display: grid;
+  /* Creates a responsive grid of squares */
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 1rem;
+}
+
+.image-container {
+  position: relative;
+  aspect-ratio: 1 / 1; /* Make them perfect squares */
+  border-radius: 8px;
+  overflow: hidden; /* Ensures image corners are rounded */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Crops the image to fit, no stretching */
+}
+
+/* --- Your Delete Button Style (Slightly smaller) --- */
+.btn-delete-img {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 28px; /* Slightly smaller */
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.btn-delete-img:hover {
+  background-color: #ffffff;
+  transform: scale(1.1); /* Add a subtle pop on hover */
+}
+
+.btn-delete-img i {
+  color: #dc3545; /* Bootstrap danger red */
+  font-size: 0.85rem; /* Smaller icon */
+  line-height: 1; /* Helps center icon */
+}
+
+/* Style for the "remove" X icon */
+.btn-delete-img i.bi-x-lg {
+  color: #333; /* Dark color for the 'X' */
+}

@@ -1,0 +1,50 @@
+.page-container {
+  padding: 2rem 1rem;
+}
+
+.custom-input {
+  height: 50px; 
+  background-color: #fff;
+}
+
+.custom-input:focus {
+  box-shadow: 0 0 0 4px rgba(0,0,0,0.1) !important; /* Soft glow instead of blue border */
+  transform: translateY(-2px);
+}
+
+.product-grid {
+  display: grid;
+  margin: 0;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem; 
+  padding-bottom: 3rem;
+}
+
+.grid-item {
+  animation: fadeUp 0.5s ease-out forwards;
+}
+
+.empty-state {
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-box {
+  width: 100px;
+  height: 100px;
+}
+
+/* 5. ANIMATIONS */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

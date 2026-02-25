@@ -1,0 +1,161 @@
+/* In src/styles.css */
+body {
+  background-color: #f4f7f6;
+  /* Soft grey background */
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+
+}
+
+/* GLOBAL STYLES */
+a {
+  text-decoration: none;
+}
+
+p {
+  color: #6c757d;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+}
+
+#navbar {
+  background: transparent !important;
+  box-shadow: none;
+  transition: background-color .25s ease, box-shadow .25s ease, backdrop-filter .25s ease;
+}
+
+#navbar.scrolled {
+  background: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.10) !important;
+  backdrop-filter: blur(10px);
+}
+
+.site-btn {
+  background-color: transparent;
+  border: 1px solid black;
+  color: black;
+  font-size: 1.1rem;
+  padding: 1rem;
+  transition: background-color .2s ease, color .2s ease;
+}
+
+.site-btn:hover {
+  background-color: black;
+  color: whitesmoke;
+}
+
+/* Custom Black Button */
+.btn-black {
+  background-color: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+  padding: 10px 24px;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 8px;
+  /* Slightly rounded corners */
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  /* In case you use it on <a> tags */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hover State (Slightly lighter or lifted) */
+.btn-black:hover {
+  background-color: #333333;
+  /* Dark Gray */
+  border-color: #333333;
+  transform: translateY(-2px);
+  /* Moves up slightly */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  color: #ffffff;
+}
+
+/* Active/Click State */
+.btn-black:active {
+  transform: translateY(0);
+  /* Pushes back down */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #000000;
+}
+
+/* Disabled State */
+.btn-black:disabled {
+  background-color: #a0a0a0;
+  border-color: #a0a0a0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* --- Action Button Base Style --- */
+.btn-action {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  /* Perfect Circle */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* Bouncy effect */
+  text-decoration: none;
+  font-size: 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-action:hover {
+  transform: translateY(-3px) scale(1.1);
+  /* Lifts up and grows slightly */
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Specific Colors --- */
+
+/* 1. VIEW (Soft Blue) */
+.btn-view {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.btn-view:hover {
+  background-color: #1976d2;
+  color: #fff;
+}
+
+/* 2. EDIT (Solid Black - Matches your theme) */
+.btn-edit {
+  background-color: #000;
+  color: #fff;
+}
+
+.btn-edit:hover {
+  background-color: #333;
+  /* Keeps white text */
+}
+
+/* 3. DELETE (Soft Red) */
+.btn-delete {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.btn-delete:hover {
+  background-color: #d32f2f;
+  color: #fff;
+}

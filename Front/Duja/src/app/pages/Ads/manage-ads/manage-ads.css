@@ -1,0 +1,82 @@
+/* --- UPLOAD ZONE --- */
+.upload-zone {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s ease;
+}
+
+/* The clickable area */
+.upload-trigger {
+    cursor: pointer;
+    transition: background 0.2s;
+    height: 100%;
+}
+
+.upload-trigger:hover {
+    background-color: #f8f9fa;
+}
+
+.border-end-md {
+    border-right: 1px solid #e0e0e0;
+}
+
+.icon-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* --- AD CARD (The Cool Part) --- */
+.ad-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.ad-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* The Dark Overlay */
+.card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    /* Darkens image */
+    opacity: 0;
+    /* Hidden by default */
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(2px);
+    /* Cool blur effect */
+}
+
+/* Show overlay on hover */
+.ad-card:hover .card-overlay {
+    opacity: 1;
+}
+
+/* Delete Button Animation */
+.scale-up {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.8);
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.ad-card:hover .scale-up {
+    transform: scale(1);
+    /* Pop up effect */
+}

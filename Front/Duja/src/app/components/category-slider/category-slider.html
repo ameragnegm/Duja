@@ -1,0 +1,13 @@
+<div class="slider-container">
+  @if (images && images.length > 0) {
+    @for (img of images; track $index) {
+      <img [src]="getImageUrl(img)" 
+           class="slide-img" 
+           [class.active]="$index === currentIndex" 
+           alt="Category Slide">
+           
+    }
+  } @else {
+    <img src="assets/placeholder.png" class="slide-img active" alt="Placeholder">
+  }
+</div>

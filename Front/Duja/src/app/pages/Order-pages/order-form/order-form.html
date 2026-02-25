@@ -1,0 +1,185 @@
+<div class="container mt-4 mb-5" style="min-height: 80vh;">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold m-0">Checkout</h3>
+    <a routerLink="/cart" class="btn btn-outline-dark btn-sm rounded-pill px-3">
+      <i class="bi bi-arrow-left"></i> Back to Cart
+    </a>
+  </div>
+
+  <div class="row g-4">
+
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+
+          <h5 class="fw-bold mb-4">Shipping Details</h5>
+
+          <form [formGroup]="form">
+
+            <div class="d-flex align-items-center justify-content-between bg-light p-3 rounded-3 mb-4 border">
+              <div>
+                <div class="fw-bold text-dark">Ordering for someone else?</div>
+                <div class="small text-muted">Switch this on to add recipient details.</div>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" (change)="onGiftToggle($event)"
+                  style="width: 3rem; height: 1.5rem;">
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label small text-muted fw-bold">RECIPIENT NAME</label>
+                <input type="text" class="form-control" formControlName="recipientName"
+                  [placeholder]="isGift ? 'Recipients Name' : 'Your Name'">
+                @if (form.get('recipientName')?.touched && form.get('recipientName')?.invalid) {
+                  <div class="text-danger small mt-1">Name is required.</div>
+                }
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label small text-muted fw-bold">PHONE NUMBER</label>
+                <input type="tel" class="form-control" formControlName="recipientPhone" placeholder="01xxxxxxxxx">
+                @if (form.get('recipientPhone')?.touched && form.get('recipientPhone')?.invalid) {
+                  <div class="text-danger small mt-1">Valid Egypt phone required.</div>
+                }
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small text-muted fw-bold">DELIVERY ADDRESS</label>
+              <textarea class="form-control" rows="3" formControlName="address"
+                placeholder="Building No, Street, Landmark..."></textarea>
+              @if (form.get('address')?.touched && form.get('address')?.invalid) {
+                <div class="text-danger small mt-1">Address is required.</div>
+              }
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label small text-muted fw-bold">DELIVERY NOTES (OPTIONAL)</label>
+              <input type="text" class="form-control" formControlName="notes"
+                placeholder="e.g. Leave with doorman, Call before arrival">
+            </div>
+
+            <hr class="text-muted opacity-25 my-4">
+
+            <div class="mb-2">
+              <label class="form-label small text-muted fw-bold mb-3">PAYMENT AMOUNT (ONLINE)</label>
+              
+              <div class="d-flex flex-column gap-3">
+                
+                <label class="payment-card border rounded-3 p-3 cursor-pointer position-relative transition-all"
+                       [class.border-dark]="form.get('paymentOption')?.value === 'Full'"
+                       [class.bg-light]="form.get('paymentOption')?.value === 'Full'">
+                  <div class="d-flex align-items-center gap-3">
+                    <input class="form-check-input mt-0" type="radio" value="Full" formControlName="paymentOption" 
+                           style="width: 1.2em; height: 1.2em;">
+                    <div class="flex-grow-1">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-dark">Pay Full Amount</span>
+                        <span class="fw-bold">{{ totalAmount | currency:'EGP ' }}</span>
+                      </div>
+                      <div class="small text-muted">Complete your purchase now. No cash needed on delivery.</div>
+                    </div>
+                  </div>
+                </label>
+
+                <label class="payment-card border rounded-3 p-3 cursor-pointer position-relative transition-all"
+                       [class.border-dark]="form.get('paymentOption')?.value === 'DeliveryOnly'"
+                       [class.bg-light]="form.get('paymentOption')?.value === 'DeliveryOnly'">
+                  <div class="d-flex align-items-center gap-3">
+                    <input class="form-check-input mt-0" type="radio" value="DeliveryOnly" formControlName="paymentOption"
+                           style="width: 1.2em; height: 1.2em;">
+                    <div class="flex-grow-1">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-dark">Pay Delivery Deposit</span>
+                        <span class="fw-bold">{{ deliveryFee | currency:'EGP ' }}</span>
+                      </div>
+                      <div class="small text-muted">
+                        Pay delivery fees now. The rest 
+                        <span class="text-danger fw-bold">({{ (totalAmount - deliveryFee) | currency:'EGP ' }})</span> 
+                        will be collected on delivery.
+                      </div>
+                    </div>
+                  </div>
+                </label>
+
+              </div>
+              
+              <div class="mt-3 text-center text-muted small">
+                <i class="bi bi-shield-lock-fill me-1"></i> Secure Online Payment via Paymob/Visa
+              </div>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm rounded-4 bg-light">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-3">Order Summary</h5>
+
+          <div class="d-flex flex-column gap-3 mb-4">
+            @for (item of cartItems; track item.variant.id) {
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-white text-dark border shadow-sm">{{ item.quantity }}x</span>
+                <div>
+                  <div class="fw-semibold small">{{ item.product.name }}</div>
+                  <div class="text-muted" style="font-size: 0.75rem;">
+                    {{ item.variant.size.name }} / {{ item.variant.color.name }}
+                  </div>
+                </div>
+              </div>
+              <div class="fw-bold small">{{ (item.product.price * item.quantity) | currency:'EGP ' }}</div>
+            </div>
+            }
+          </div>
+
+          <hr class="text-muted opacity-25">
+
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted">Subtotal</span>
+            <span class="fw-semibold">{{ (totalAmount - deliveryFee) | currency:'EGP ' }}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">Delivery Fee</span>
+            <span class="fw-semibold">{{ deliveryFee | currency:'EGP ' }}</span>
+          </div>
+
+          <hr class="text-muted opacity-25">
+
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <span class="text-dark fw-bold">Due Now</span>
+            <span class="fs-4 fw-bold text-primary">
+              @if(form.get('paymentOption')?.value === 'Full') {
+                {{ totalAmount | currency:'EGP ' }}
+              } @else {
+                {{ deliveryFee | currency:'EGP ' }}
+              }
+            </span>
+          </div>
+
+          <button class="btn btn-black w-100 py-3 rounded-3 fw-bold shadow-sm" (click)="placeOrder()"
+            [disabled]="form.invalid || isSubmitting">
+            @if(isSubmitting) {
+              <span class="spinner-border spinner-border-sm" role="status"></span> Processing...
+            } @else {
+              @if(form.get('paymentOption')?.value === 'Full') {
+                Pay Full Amount
+              } @else {
+                Pay Deposit Only
+              }
+            }
+          </button>
+          
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

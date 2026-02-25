@@ -1,0 +1,16 @@
+# Visual Studio & .NET
+.vs/
+bin/
+obj/
+*.user
+*.suo
+Backend/Duja/.vs/
+
+# Angular
+node_modules/
+dist/
+.angular/
+
+# User Uploaded Images
+Backend/Duja/Duja/wwwroot/images/product/*
+!Backend/Duja/Duja/wwwroot/images/product/.keep

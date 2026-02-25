@@ -1,0 +1,107 @@
+.login-btn {
+  font-size: 1.5rem;
+  font-weight: 520;
+  color: black;
+
+}
+
+/* 1. THE OVERLAY (Glass Effect) */
+.search-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.98);
+  /* 98% opacity white */
+  backdrop-filter: blur(10px);
+  /* Blurs the background slightly */
+  z-index: 10000;
+  overflow-y: auto;
+
+  /* Smooth Slide Down Animation */
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 2. THE INPUT (Clean & Huge) */
+.search-input {
+  font-size: 1.4rem;
+  /* Large text */
+  font-weight: 300;
+  /* Thin font */
+  color: #000;
+  background: transparent;
+}
+
+.search-input::placeholder {
+  color: #adb5bd;
+  font-weight: 200;
+
+}
+
+.search-input:focus {
+  box-shadow: none;
+  /* No blue glow */
+}
+
+/* 3. THE BACK BUTTON */
+.btn-back {
+  transition: transform 0.2s;
+}
+
+.btn-back:hover {
+  transform: translateX(-5px);
+  /* Moves left slightly on hover */
+  color: #000;
+}
+
+/* 4. PRODUCT CARDS (Minimalist) */
+.search-card {
+  transition: all 0.2s ease;
+  background: white;
+  border: 1px solid #f0f0f0;
+}
+
+.search-card:hover {
+  transform: translateY(-3px);
+  /* Subtle lift */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  border-color: #000;
+  /* Highlight border on hover */
+}
+
+.product-img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+}
+
+/* 1. Base style for the navbar (Smooth Transition) */
+.navbar-transition {
+  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out, padding 0.3s ease;
+}
+
+/* 2. Style when Scrolled (White & Shadow) */
+.scrolled-active {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  /* Slightly transparent white */
+  backdrop-filter: blur(5px);
+  /* Blurry glass effect behind it */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow */
+  padding-top: 10px !important;
+  /* Optional: Make navbar slightly thinner when scrolling */
+  padding-bottom: 10px !important;
+}

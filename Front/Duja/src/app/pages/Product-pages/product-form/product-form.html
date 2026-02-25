@@ -1,0 +1,329 @@
+<div class="form-container">
+    <button type="button" (click)="goBack()" class="back-button-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+        </svg>
+    </button>
+    <h2>{{ isEditMode ? 'Edit Product' : 'Add New Product' }}</h2>
+
+    <form [formGroup]="productform" (ngSubmit)="onSubmit()">
+
+        <div class="form-grid-layout">
+
+            <div class="image-section">
+                <h4>Manage Images</h4>
+
+                @if (isEditMode && existingImages.length > 0) {
+                <p class="form-label">Existing Images:</p>
+                <div class="existing-images-gallery">
+                    @for (image of existingImages; track image.id) {
+                    <div class="image-container">
+                        <img [src]="global.getImageUrl(image.imageUrl)" [alt]="product.name + ' image'">
+                        <button type="button" class="btn-delete-img" title="Delete Image"
+                            (click)="markImageForDeletion(image.id)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                    }
+                </div>
+                } @else if(isEditMode) {
+                <p>This product has no images.</p>
+                }
+
+                <div class="mt-4">
+                    <label for="newImages" class="form-label">
+                        {{ isEditMode ? 'Add More Images' : 'Upload Images' }}
+                    </label>
+                    <input type="file" id="newImages" class="form-control" multiple (change)="onFileSelected($event)">
+                </div>
+
+                @if(newlySelectedImagePreviews.length > 0){
+                <p class="form-label mt-4">New Images (Preview):</p>
+                <div class="existing-images-gallery">
+                    @for(item of newlySelectedImagePreviews; track $index){
+                    <div class="image-container">
+                        <img [src]="item.previewUrl" alt="New image preview">
+                        <button type="button" class="btn-delete-img" title="Remove Image"
+                            (click)="removeNewImage($index)">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+
+            <div class="data-section">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="name" class="form-label">Product Name</label>
+                        <input type="text" id="name" class="form-control" formControlName="name">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="price" class="form-label">Price</label>
+                        <input type="number" id="price" class="form-control" formControlName="price">
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea id="description" class="form-control" formControlName="description"
+                            rows="3"></textarea>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="categoryId" class="form-label">Category</label>
+                        <div class="input-group">
+                            <select id="categoryId" class="form-select" formControlName="categoryId">
+                                <option [ngValue]="null" disabled>Select a category</option>
+                                @for (item of Categories; track item.id) {
+                                <option [value]="item.id">{{item.name}}</option>
+                                }
+                            </select>
+                            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal"
+                                data-bs-target="#manageCategoryModal" title="Manage Categories">
+                                <i class="bi bi-gear-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="variants-section">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>Product Variants</h4>
+                        <button type="button" class="btn btn-secondary" (click)="addVariant()">
+                            + Add Variant
+                        </button>
+                    </div>
+
+                    <div formArrayName="variants">
+                        @for (variantGroup of variants.controls; track $index) {
+                        <div [formGroupName]="$index" class="variant-card">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5>Variant #{{ $index + 1 }}</h5>
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                    (click)="removeVariant($index)">
+                                    Remove
+                                </button>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Size</label>
+                                    <div class="input-group">
+                                        <select class="form-select" formControlName="sizeID">
+                                            <option [ngValue]="null" disabled>Select Size</option>
+                                            @for (item of sizes; track item.id) {
+                                            <option [value]="item.id">{{item.name}}</option>
+                                            }
+                                        </select>
+                                        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal"
+                                            data-bs-target="#manageSizeModal" title="Manage Sizes">
+                                            <i class="bi bi-gear-fill"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Color</label>
+                                    <div class="input-group">
+                                        <select class="form-select" formControlName="colorID">
+                                            <option [ngValue]="null" disabled>Select Color</option>
+                                            @for (item of colors; track item.id) {
+                                            <option [value]="item.id">{{item.name}}</option>
+                                            }
+                                        </select>
+                                        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal"
+                                            data-bs-target="#manageColorModal" title="Manage Colors">
+                                            <i class="bi bi-gear-fill"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Stock Quantity</label>
+                                    <input type="number" class="form-control" formControlName="stockQuantity">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">length</label>
+                                    <input type="number" class="form-control" formControlName="length">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Width</label>
+                                    <input type="number" class="form-control" formControlName="width">
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div> 
+        <button type="submit" class="btn btn-primary mt-4 w-100"
+            [disabled]="productform.invalid || (existingImages.length === 0 && newlySelectedImagePreviews.length === 0)">
+            {{ isEditMode ? 'Update Product' : 'Save Product' }}
+        </button>
+
+    </form>
+</div>
+
+<div class="modal fade" id="manageCategoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Manage Categories</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+
+                <div class="bg-light p-3 rounded-3 mb-4">
+                    <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()" class="d-flex gap-2">
+                        <input type="text" class="form-control" placeholder="Category Name"
+                            formControlName="name">
+                        <button type="submit" class="btn btn-primary fw-bold px-3"
+                            [disabled]="categoryForm.invalid">Add</button>
+                    </form>
+                </div>
+
+                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                    <table class="table table-hover align-middle">
+                        <tbody>
+                            @for (category of Categories; track category.id) {
+                            <tr>
+                                <td>
+                                    @if(editingCategoryId === category.id) {
+                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="category.name"
+                                        [ngModelOptions]="{standalone: true}">
+                                    } @else {
+                                    <span class="fw-bold text-dark">{{ category.name }}</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if(editingCategoryId === category.id) {
+                                    <button class="btn btn-sm btn-success me-1" (click)="updateCategory(category)"><i
+                                            class="bi bi-check-lg"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" (click)="cancelEditCategory()"><i
+                                            class="bi bi-x-lg"></i></button>
+                                    } @else {
+                                    <button class="btn btn-sm btn-light text-primary me-1"
+                                        (click)="startEditCategory(category.id)"><i class="bi bi-pencil-fill"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" (click)="deleteCategory(category.id)"><i
+                                            class="bi bi-trash-fill"></i></button>
+                                    }
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="manageSizeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Manage Sizes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+
+                <div class="bg-light p-3 rounded-3 mb-4">
+                    <form [formGroup]="sizeForm" (ngSubmit)="saveSize()" class="d-flex gap-2">
+                        <input type="text" class="form-control" placeholder="Size Name (e.g., XL)"
+                            formControlName="name">
+                        <button type="submit" class="btn btn-primary fw-bold px-3"
+                            [disabled]="sizeForm.invalid">Add</button>
+                    </form>
+                </div>
+
+                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                    <table class="table table-hover align-middle">
+                        <tbody>
+                            @for (size of sizes; track size.id) {
+                            <tr>
+                                <td>
+                                    @if(editingSizeId === size.id) {
+                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="size.name"
+                                        [ngModelOptions]="{standalone: true}">
+                                    } @else {
+                                    <span class="fw-bold text-dark">{{ size.name }}</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if(editingSizeId === size.id) {
+                                    <button class="btn btn-sm btn-success me-1" (click)="updateSize(size)"><i
+                                            class="bi bi-check-lg"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" (click)="cancelEditSize()"><i
+                                            class="bi bi-x-lg"></i></button>
+                                    } @else {
+                                    <button class="btn btn-sm btn-light text-primary me-1"
+                                        (click)="startEditSize(size.id)"><i class="bi bi-pencil-fill"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" (click)="deleteSize(size.id)"><i
+                                            class="bi bi-trash-fill"></i></button>
+                                    }
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="manageColorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Manage Colors</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+
+                <div class="bg-light p-3 rounded-3 mb-4">
+                    <form [formGroup]="colorForm" (ngSubmit)="saveColor()" class="d-flex gap-2">
+                        <input type="text" class="form-control" placeholder="Color Name (e.g., Red)"
+                            formControlName="name">
+                        <button type="submit" class="btn btn-primary fw-bold px-3"
+                            [disabled]="colorForm.invalid">Add</button>
+                    </form>
+                </div>
+
+                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                    <table class="table table-hover align-middle">
+                        <tbody>
+                            @for (color of colors; track color.id) {
+                            <tr>
+                                <td>
+                                    @if(editingColorId === color.id) {
+                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="color.name"
+                                        [ngModelOptions]="{standalone: true}">
+                                    } @else {
+                                    <span class="fw-bold text-dark">{{ color.name }}</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if(editingColorId === color.id) {
+                                    <button class="btn btn-sm btn-success me-1" (click)="updateColor(color)"><i
+                                            class="bi bi-check-lg"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" (click)="cancelEditColor()"><i
+                                            class="bi bi-x-lg"></i></button>
+                                    } @else {
+                                    <button class="btn btn-sm btn-light text-primary me-1"
+                                        (click)="startEditColor(color.id)"><i class="bi bi-pencil-fill"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" (click)="deleteColor(color.id)"><i
+                                            class="bi bi-trash-fill"></i></button>
+                                    }
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

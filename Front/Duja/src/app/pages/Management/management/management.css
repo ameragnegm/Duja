@@ -1,0 +1,32 @@
+/* تنسيق التبويبات (Pills) */
+.nav-pills .nav-link {
+    color: #6c757d;
+    /* لون رمادي للنصوص غير النشطة */
+    background-color: transparent;
+    border-radius: 50px;
+    /* جعل الأزرار دائرية الحواف */
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+/* حالة الوقوف بالماوس (Hover) */
+.nav-pills .nav-link:hover {
+    background-color: #f8f9fa;
+    /* لون خلفية فاتح جداً */
+    color: #000;
+}
+
+/* الحالة النشطة (Active) - التبويب المختار */
+.nav-pills .nav-link.active {
+    background-color: #000;
+    /* خلفية سوداء */
+    color: #fff;
+    /* نص أبيض */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* ظل خفيف */
+}
+
+/* تنسيق الحاوية البيضاء الخاصة بالتبويبات */
+.nav {
+    border: 1px solid #dee2e6;
+}

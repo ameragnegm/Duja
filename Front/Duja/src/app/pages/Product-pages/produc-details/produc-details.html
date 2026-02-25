@@ -1,0 +1,135 @@
+@if (product) {
+<div class="container-fluid page-container py-4 py-lg-5">
+  <div class="container">
+
+    <div class="mb-3 mb-lg-4">
+      <button (click)="goBack()" class="btn btn-white shadow-sm rounded-circle d-flex align-items-center justify-content-center border-0" style="width: 45px; height: 45px;">
+        <i class="bi bi-arrow-left text-dark fs-5"></i>
+      </button>
+    </div>
+
+    <div class="product-master-card">
+      <div class="row g-0">
+
+        <div class="col-lg-6 gallery-column position-relative">
+           
+
+          @if (product.images && product.images.length > 0) {
+          <div id="productDetailCarousel" class="carousel slide" data-bs-interval="false">
+
+            <div class="carousel-inner">
+              @for (image of product.images; track image.id; let i = $index) {
+              <div class="carousel-item" [class.active]="i === 0">
+
+                <div class="position-relative w-100" style="padding-top: 125%;">
+                  <img [src]="global.getImageUrl(image.imageUrl)"
+                    class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" [alt]="product.name">
+                </div>
+
+              </div>
+              }
+            </div>
+
+            @if(product.images.length > 1) {
+            <button class="carousel-control-prev" type="button" data-bs-target="#productDetailCarousel"
+              data-bs-slide="prev">
+              <span class="control-icon"><i class="bi bi-chevron-left"></i></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#productDetailCarousel"
+              data-bs-slide="next">
+              <span class="control-icon"><i class="bi bi-chevron-right"></i></span>
+            </button>
+            }
+          </div>
+          } @else {
+             <div class="d-flex align-items-center justify-content-center h-100 p-5">
+               <img src="https://via.placeholder.com/600x600?text=No+Image" class="img-fluid rounded-4 opacity-50">
+             </div>
+          }
+        </div>
+
+        <div class="col-lg-6">
+          <div class="details-column">
+
+            <div class="d-none d-lg-flex justify-content-end gap-3 mb-2 opacity-50">
+              <a [routerLink]="['/manage/products/edit', product.id]" class="text-dark text-decoration-none small">
+                <i class="bi bi-pencil-square"></i> Edit
+              </a>
+              <span class="text-dark small" style="cursor: pointer;" (click)="onDeleteProduct(product.id)">
+                <i class="bi bi-trash"></i> Delete
+              </span>
+            </div>
+
+            <h1 class="product-title display-6 mb-3 text-dark">{{ product.name }}</h1>
+            
+            <div class="d-flex align-items-center justify-content-between mb-4 pb-4 border-bottom border-light">
+              <span class="price-tag">{{ product.price | currency:'EGP ' }}</span>
+              <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill">
+                In Stock
+              </span>
+            </div>
+
+            <p class="text-secondary mb-5" style="line-height: 1.8;">
+              {{ product.description }}
+            </p>
+
+            <div class="mb-5">
+              <div class="mb-4">
+                <div class="d-flex justify-content-between mb-2">
+                  <span class="small fw-bold text-uppercase text-secondary">Select Size</span>
+                  <span class="small fw-bold text-dark" *ngIf="selectedSizeId">{{ getSelectedSizeName() }}</span>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                  @for (item of currentSizes; track item.id) {
+                    <div class="option-circle size-circle" 
+                         [class.active]="selectedSizeId === item.id"
+                         (click)="selectedSizeId = item.id; getAvailableColorsforSelectedSize()">
+                      {{ item.name }}
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <div>
+                <span class="small fw-bold text-uppercase text-secondary d-block mb-2">Select Color</span>
+                <div class="d-flex flex-wrap gap-3">
+                  @for (item of currentColors; track item.id) {
+                    <div class="option-circle color-circle" 
+                         [class.active]="selectedColorId === item.id"
+                         [style.background-color]="item.name" 
+                         [title]="item.name"
+                         (click)="selectedColorId = item.id; onColorChange()">
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div class="action-buttons-container d-flex flex-column flex-md-row gap-3 mt-auto">
+              
+              <div class="quantity-selector border rounded-pill d-flex align-items-center px-3 py-2 bg-light" style="min-width: 140px;">
+                <button class="btn btn-link text-dark text-decoration-none" (click)="decreaseQty()" [disabled]="quantityToBuy <= 1">
+                   <i class="bi bi-dash-lg"></i>
+                </button>
+                <span class="fw-bold mx-auto">{{ quantityToBuy }}</span>
+                <button class="btn btn-link text-dark text-decoration-none" (click)="increaseQty()" [disabled]="!selectedVariant || quantityToBuy >= selectedVariant.stockQuantity">
+                   <i class="bi bi-plus-lg"></i>
+                </button>
+              </div>
+
+              <button class="btn-add-cart flex-grow-1 shadow-sm d-flex align-items-center justify-content-center gap-2"
+                      (click)="AddToCartandView()"
+                      [disabled]="!selectedVariant || quantityToBuy < 1">
+                <i class="bi bi-bag-plus-fill"></i> Add to Cart
+              </button>
+            </div>
+            
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+}

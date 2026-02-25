@@ -1,0 +1,111 @@
+<div class="container-fluid py-4 bg-transparent min-vh-100">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5 gap-3">
+
+        <div class="d-flex gap-5 justify-content-center">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" class="form-control" placeholder="Search..." (input)="onSearch($event)">
+            </div>
+
+            <select class="form-select w-auto border-0 shadow-sm" (change)="onRolesfilter($event)">
+                <option value="All">All Roles</option>
+                @for (item of Roles; track item.id) {
+                <option [value]="item.id">{{ item.name }}</option>
+                }
+            </select>
+
+            <a routerLink="add" class="btn btn-black d-flex align-items-center gap-2">
+                <i class="bi bi-plus-lg"></i> <span>New Member</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="table table-borderless align-middle collapse-table">
+            <thead > 
+                <tr>
+                    <th class="ps-4">Member</th>
+                    <th>Role</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th class="text-end pe-4">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (isloading) {
+                <tr>
+                    <td colspan="5" class="text-center py-5">
+                        <div class="spinner-border text-dark"></div>
+                    </td>
+                </tr>
+                } @else {
+                @if(filteredEmps.length === 0) {
+                <tr>
+                    <td colspan="5" class="border-0">
+
+                        <div class="d-flex flex-column align-items-center justify-content-center py-5">
+
+                            <div class="bg-light p-4 rounded-circle shadow-sm mb-3 d-flex align-items-center justify-content-center"
+                                style="width: 80px; height: 80px;">
+                                <i class="bi bi-people-fill text-muted display-4"></i>
+                            </div>
+
+                            <h5 class="text-dark fw-bold mb-1">No Member Found</h5>
+                            <p class="text-muted mb-0">Try adjusting your search or Role filter.</p>
+
+                        </div>
+
+                    </td>
+                </tr>
+                }
+                @for (employee of filteredEmps; track employee.id) {
+                <tr class="shadow-row" [routerLink]="['/manage/employees', employee.id]">
+                    <td class="ps-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="avatar-sm bg-dark text-white">
+                                {{ employee.fullName.substring(0,2).toUpperCase() }}
+                            </div>
+                            <div>
+                                <div class="fw-bold text-dark">{{ employee.fullName }}</div>
+                                <div class="small text-muted">ID: #{{ employee.id }}</div>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td>
+                        @for (role of employee.roles; track role.id) {
+                        <span class="role-badge">{{ role.name }}</span>
+                        }
+                    </td>
+
+                    <td class="text-secondary">{{ employee.email }}</td>
+
+                    <td class="text-secondary font-monospace">{{ employee.phoneNumber }}</td>
+
+                    <td class="text-end pe-4">
+                        <div class="d-flex justify-content-end gap-2">
+
+                            <a [routerLink]="['/manage/employee', employee.id]" class="btn-action btn-view"
+                                title="View Details">
+                                <i class="bi bi-eye-fill"></i>
+                            </a>
+
+                            <a [routerLink]="['/manage/employee/edit', employee.id]" class="btn-action btn-edit"
+                                title="Edit Employee">
+                                <i class="bi bi-pencil-fill"></i>
+                            </a>
+
+                            <button (click)="onDelete(employee.id)" class="btn-action btn-delete" title="Delete">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+
+                        </div>
+                    </td>
+                </tr>
+                }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

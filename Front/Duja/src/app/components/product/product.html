@@ -1,0 +1,74 @@
+@if (product) {
+<div class="card product-card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative"
+  (click)="goToDetails(product.id)">
+
+  @if(global.hasRole('Admin') || global.hasRole('Employee')){
+  <button type="button" class="btn-delete position-absolute top-0 end-0 m-3 z-3"
+    (click)="$event.stopPropagation(); DeleteProduct(product.id)">
+    <i class="bi bi-trash3-fill"></i>
+  </button>
+  }
+
+  <div class="position-relative bg-light w-100" style="padding-top: 0%;">
+    <div class="position-relative top-0 start-0 w-100 h-100">
+
+      @if (product.images && product.images.length > 0) {
+      <div [id]="'carousel-' + product.id" class="carousel slide h-100" data-bs-interval="false">
+        <div class="carousel-inner h-100">
+          @for (image of product.images; track image.id; let i = $index) {
+          <div class="carousel-item h-100" [class.active]="i === 0">
+            <img [src]="global.getImageUrl(image.imageUrl)" class="d-block w-100 h-100 object-fit-cover"
+              [alt]="product.name">
+          </div>
+          }
+        </div>
+        </div>
+      } @else {
+      <img src="https://via.placeholder.com/400x500?text=No+Image" class="w-100 h-100 object-fit-cover">
+      }
+    </div>
+  </div>
+
+  <div class="card-body d-flex flex-column p-4">
+    
+    <div class="mb-2">
+      <h6 class="card-title text-dark fw-bold mb-1 text-truncate" style="font-size: 1.1rem;">{{ product.name }}</h6>
+      
+      <p class="description-clamp mb-2">
+        {{ product.description }}
+      </p>
+
+      <div class="d-flex align-items-center justify-content-end mt-2">
+        @if (hasStock(product)) {
+          <span class="status-indicator text-success bg-success-subtle">
+             In Stock
+          </span>
+        } @else {
+          <span class="status-indicator text-danger bg-danger-subtle">
+             Sold Out
+          </span>
+        }
+      </div>
+
+    </div>
+
+    <div class="mt-auto pt-3"></div>
+
+    <div class="d-flex justify-content-between align-items-center border-top pt-3">
+      
+      <div>
+         <span class="d-block text-muted small text-uppercase fw-bold" style="font-size: 0.7rem;">Price</span>
+         <span class="fw-bold text-dark fs-5 price-text">{{ product.price | currency:'EGP ' }}</span>
+      </div>
+
+      <button class="btn-quick-add shadow-sm"
+        [disabled]="!hasStock(product)" 
+        (click)="$event.stopPropagation(); ">
+        <i class="bi bi-bag-plus-fill fs-6"></i>
+      </button>
+
+    </div>
+  </div>
+
+</div>
+}

@@ -1,0 +1,25 @@
+.slider-container {
+  width: 100%;
+  height: 100%;
+  position: relative; /* Necessary for absolute children */
+  overflow: hidden;
+}
+
+.slide-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures image fills the box without stretching */
+  
+  /* The Fade Effect */
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  z-index: 1;
+}
+
+.slide-img.active {
+  opacity: 1;
+  z-index: 2;
+}

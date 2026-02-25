@@ -1,0 +1,52 @@
+/* Checkout */
+.checkout-title{
+  font-size: 44px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 18px;
+}
+
+.checkout-card{
+  border: 0;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+}
+
+.checkout-card .card-body{
+  padding: 28px;
+}
+
+.section-title{
+  font-weight: 800;
+  margin-bottom: 18px;
+}
+
+.form-control{
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.payment-block{
+  margin-top: 10px;
+  padding-top: 8px;
+}
+
+.payment-block .form-check{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0;
+}
+
+.payment-block .form-check-input{
+  margin-top: 0;
+}
+
+.order-total{
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.order-total .amount{
+  color: #0d6efd;
+}

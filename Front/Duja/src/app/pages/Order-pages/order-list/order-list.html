@@ -1,0 +1,173 @@
+<div class="container-fluid py-4 bg-transparent min-vh-100">
+
+  <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-5 gap-4">
+    <div class="d-flex flex-column flex-md-row gap-2 flex-grow-1 justify-content-between">
+      <div class="search-box flex-grow-1" style="min-width: 280px; max-width: 40rem;">
+        <i class="bi bi-search"></i>
+        <input type="text" class="form-control w-100" placeholder="Search Owner, Phone, or Address..."
+          (input)="onSearch($event)">
+      </div>
+      <input type="date" class="form-control w-auto border-0 shadow-sm text-secondary fw-medium"
+        style="min-width: 150px;" (change)="onDateFilter($event)">
+      <select class="form-select w-auto border-0 shadow-sm text-secondary fw-medium" (change)="onStatusFilter($event)"
+        style="min-width: 140px;">
+        <option value="All">All Status</option>
+        <option value="Pending">Pending</option>
+        <option value="Confirmed">Confirmed</option>
+        <option value="Shipped">Shipped</option>
+        <option value="Delivered">Delivered</option>
+        <option value="Cancelled">Cancelled</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    @if (isLoading) {
+    <div class="col-12 text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    } @else {
+
+    @if(filteredOrders.length === 0) {
+    <div class="col-12">
+      <div class="card border-0 shadow-sm rounded-4 py-5">
+        <div class="card-body text-center">
+
+          <div
+            class="empty-state-icon text-muted rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+            <i class="bi bi-search display-5"></i>
+          </div>
+
+          <h5 class="fw-bold text-dark mb-2">No matching orders found</h5>
+          <p class="text-muted mb-4" style="max-width: 400px; margin: 0 auto;">
+            We couldn't find any orders matching your current filters. Try adjusting your search keywords, date, or
+            status.
+          </p>
+
+
+        </div>
+      </div>
+    </div>
+    }
+    @for (o of filteredOrders; track o.id) {
+    <div class="col-12">
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden hover-card"
+        [class.border-primary]="editingOrderId === o.id" [class.border]="editingOrderId === o.id">
+
+        <div class="card-body p-4">
+          <div class="row align-items-center gy-3">
+
+            <div class="col-md-4">
+              <div class="d-flex align-items-center gap-3">
+
+                @if (editingOrderId === o.id) {
+                <div class="d-flex flex-column" style="width: 140px;">
+                  <label class="small text-muted mb-1">Status</label>
+                  <select class="form-select form-select-sm shadow-none border-secondary" [(ngModel)]="o.status">
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </div>
+                }
+                @else {
+                <div class="status-icon-box rounded-3 d-flex align-items-center justify-content-center shadow-sm"
+                  [ngClass]="getStatusConfig(o.status).bg + ' bg-opacity-10'">
+                  <i class="fs-4" [ngClass]="[getStatusConfig(o.status).icon, getStatusConfig(o.status).color]"></i>
+                </div>
+                }
+
+                <div class="flex-grow-1">
+                  @if (editingOrderId === o.id) {
+                  <input type="text" class="form-control form-control-sm py-0 px-2" [(ngModel)]="o.ownerName">
+                  } @else {
+                  <div class="fw-bold text-dark mb-0 text-truncate">{{ o.ownerName }}</div>
+                  }
+                  <div class="text-muted x-small">by: {{ o.userName }}</div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="d-flex flex-column gap-2">
+
+                <div class="d-flex align-items-center gap-2 text-secondary small">
+                  <i class="bi bi-telephone text-black"></i>
+                  @if (editingOrderId === o.id) {
+                  <input type="text" class="form-control form-control-sm py-0 px-2" [(ngModel)]="o.ownerPhone">
+                  } @else {
+                  {{ o.ownerPhone }}
+                  }
+                </div>
+
+                <div class="d-flex align-items-center gap-2 text-secondary small text-truncate" title="{{ o.address }}">
+                  <i class="bi bi-geo-alt text-black"></i>
+                  @if (editingOrderId === o.id) {
+                  <input type="text" class="form-control form-control-sm py-0 px-2" [(ngModel)]="o.address">
+                  } @else {
+                  {{ o.address }}
+                  }
+                </div>
+
+                <div class="d-flex align-items-center gap-2 text-secondary small mt-1">
+                  <i class="bi bi-calendar3 text-black"></i> {{ o.orderDate | date:'mediumDate' }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="p-2 bg-light rounded-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="small fw-bold text-dark">Total</span>
+                  <span class="fw-bold text-black">{{o.totalAmount | currency:'EGP '}}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="x-small text-muted">Paid</span>
+                  <span class="x-small text-success fw-bold">{{o.paidAmount | currency:'EGP '}}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="x-small text-muted">Remaining</span>
+                  <span class="x-small text-danger fw-bold">{{o.remainingAmount | currency:'EGP '}}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-2 text-md-end">
+              <div class="d-flex justify-content-md-end gap-2">
+
+                @if (editingOrderId === o.id) {
+                <button (click)="saveOrder(o)" class="btn btn-success btn-sm px-3 fw-bold rounded-pill" title="Save">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+                <button (click)="cancelEdit()" class="btn btn-light text-danger btn-sm px-3 fw-bold rounded-pill"
+                  title="Cancel">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+                }
+                @else {
+                <a [routerLink]="['/manage/orders', o.id]"
+                  class="btn btn-light text-black btn-sm px-3 fw-bold rounded-pill" title="View Details">
+                  <i class="bi bi-eye-fill"></i>
+                </a>
+                <button (click)="startEdit(o.id)" class="btn btn-light text-black btn-sm px-3 fw-bold rounded-pill"
+                  title="Edit">
+                  <i class="bi bi-pencil-fill"></i>
+                </button>
+                }
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+    }
+  </div>
+</div>

@@ -1,0 +1,117 @@
+/* --- Global Reset & Background --- */
+.min-vh-100 {
+    min-height: 80vh;
+}
+
+/* --- Search Box Styling --- */
+.search-box {
+    position: relative;
+    width: 250px;
+}
+
+.search-box i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+}
+
+.search-box input {
+    padding-left: 40px;
+    border-radius: 50px;
+    /* Pill shape */
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.search-box input:focus {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+
+/* --- Table Styles --- */
+.table-container {
+    padding: 0 10px;
+}
+
+table {
+    border-collapse: separate;
+    border-spacing: 0 12px;
+    /* Adds space BETWEEN rows */
+}
+thead, thead tr, thead th {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+thead th {
+    color: #66707b;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    padding-bottom: 10px;
+    border: none;
+}
+
+/* --- The Floating Row Magic --- */
+.shadow-row {
+    background: #fff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+    /* Soft shadow */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.shadow-row td {
+    background: #fff;
+    padding: 16px 10px;
+    border-top: 1px solid rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+/* Round the corners of the row */
+.shadow-row td:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+    border-left: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.shadow-row td:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    border-right: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.shadow-row:hover {
+    transform: translateY(-3px);
+    /* Lifts up on hover */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    /* Stronger shadow */
+    z-index: 10;
+    position: relative;
+}
+
+/* --- Avatar Circle --- */
+.avatar-sm {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.85rem;
+    letter-spacing: -0.5px;
+}
+
+/* --- Role Badge --- */
+.role-badge {
+    background: #f0f2f5;
+    color: #5e6e82;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
