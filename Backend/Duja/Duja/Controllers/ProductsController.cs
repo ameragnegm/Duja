@@ -7,6 +7,7 @@ using Duja.Migrations;
 using Duja.Models;
 using Duja.UnitOfWorks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
@@ -95,89 +96,191 @@ namespace Duja.Controllers
         [EndpointSummary("Add New Product")]
         public async Task<IActionResult> AddProduct([FromForm] AddproductDTO product)
         {
+            if (product == null)
+                return BadRequest(new { message = "No data received" });
 
-            if (product == null) return BadRequest(new { message = " No data received " });
-            foreach (var v in product.Variants)
+            List<ProductVarientDto> variants = new();
+
+            if (!string.IsNullOrWhiteSpace(product.VariantsINJSON))
             {
-                Console.WriteLine(v.StockQuantity);
-            }
+                try
+                {
+                    var raw = product.VariantsINJSON.Trim();
 
-            var mappedproduct = mapper.Map<Product>(product);
-            var currentCategory = await unit.CategoryRepository.GetById(mappedproduct.CategoryId);
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+
+                    if (raw.StartsWith("["))
+                    {
+                        variants = JsonSerializer.Deserialize<List<ProductVarientDto>>(raw, options)
+                                   ?? new List<ProductVarientDto>();
+                    }
+                    else if (raw.StartsWith("{"))
+                    {
+                        var singleVariant = JsonSerializer.Deserialize<ProductVarientDto>(raw, options);
+
+                        if (singleVariant != null)
+                        {
+                            variants.Add(singleVariant);
+                        }
+                    }
+                    else
+                    {
+                        return BadRequest(new
+                        {
+                            message = "Invalid variants JSON format",
+                            raw = product.VariantsINJSON
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(new
+                    {
+                        message = "Invalid variants JSON",
+                        raw = product.VariantsINJSON,
+                        details = ex.Message
+                    });
+                }
+            }
+        
+
+            var mappedproduct = new Product
+            {
+                Name = product.Name,
+                Price = product.Price,
+                Description = product.Description,
+                CategoryId = product.CategoryId ,
+                Images = new List<productImage>(),
+                Variants = new List<ProductVariant>()
+            };
+
+            var currentCategory = mappedproduct.CategoryId > 0
+                ? await unit.CategoryRepository.GetById(mappedproduct.CategoryId)
+                : null;
+
+            // Images
             if (product.NewImages != null && product.NewImages.Count > 0)
             {
+                var folderpath = Path.Combine(webHostEnvironment.WebRootPath, "images/product");
+                Directory.CreateDirectory(folderpath);
+
                 foreach (var image in product.NewImages)
                 {
+                    var imgName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
+                    var fullpath = Path.Combine(folderpath, imgName);
 
-                    var folderpath = Path.Combine(webHostEnvironment.WebRootPath, "images/product");
-                    var ImgName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
-                    var fullpath = Path.Combine(folderpath, ImgName);
                     using (var stream = new FileStream(fullpath, FileMode.Create))
                     {
                         await image.CopyToAsync(stream);
                     }
-                    productImage productImage = new productImage()
+
+                    var productImage = new productImage
                     {
-                        ImageUrl = $"images/product/{ImgName}"
+                        ImageUrl = $"images/product/{imgName}"
                     };
+
                     mappedproduct.Images.Add(productImage);
                 }
 
-                foreach (var img in mappedproduct.Images)
+                if (currentCategory != null)
                 {
-                    currentCategory.Images.Add(img.ImageUrl);
+                    foreach (var img in mappedproduct.Images)
+                    {
+                        currentCategory.Images.Add(img.ImageUrl);
+                    }
                 }
             }
-            unit.ProductRepository.Add(mappedproduct);
 
+            // Variants
+            foreach (var v in variants)
+            {
+                var currentVariant = new ProductVariant
+                {
+                    SizeId = v.SizeID,
+                    ColorId = v.ColorID,
+                    StockQuantity = v.StockQuantity,
+                    Length = v.Length,
+                    Shoulder = v.Shoulder,
+                    bust = v.bust,
+                    Sleevelength = v.Sleevelength,
+                    Waist = v.Waist,
+                    Hip = v.Hip,
+                    Inseam = v.Inseam,
+                    Thigh = v.Thigh,
+                    Weight = v.Weight,
+                    Note = v.Note
+                };
+
+                mappedproduct.Variants.Add(currentVariant);
+            }
+
+            unit.ProductRepository.Add(mappedproduct);
             await unit.saveAsync();
-            return Ok(new { message = "Added Successfully." });
+
+            return Ok(new
+            {
+                message = "Added Successfully.",
+                productId = mappedproduct.Id
+            });
         }
+
         [HttpPut("{id}")]
+        [EndpointSummary("Edit Specific Product")]
         public async Task<IActionResult> UpdateProduct(int id, [FromForm] UpdateProductDTO dto)
         {
             try
             {
-                // 1. EAGER LOAD the product. 
-                // Your GetById method MUST use .Include(p => p.Images) and .Include(p => p.Variants)
                 var product = await unit.ProductRepository.GetById(id);
 
                 if (product == null)
                 {
-                    return NotFound($"Product with ID {id} not found.");
+                    return NotFound(new { message = $"Product with ID {id} not found." });
                 }
 
-                // 2. USE THE MAPPER to update simple properties (Name, Price, etc.).
+                // -----------------------------------
+                // 1) Update simple product fields with mapper
+                // -----------------------------------
                 mapper.Map(dto, product);
 
-                // 3. HANDLE IMAGE DELETIONS.
-                // We add a check for product.Images != null just in case.
-                if (product.Images != null && dto.ImagesToDelete != null && dto.ImagesToDelete.Any())
+                if (product.Images == null)
+                    product.Images = new List<productImage>();
+
+                if (product.Variants == null)
+                    product.Variants = new List<ProductVariant>();
+
+                // -----------------------------------
+                // 2) Delete selected old images
+                // -----------------------------------
+                if (dto.ImagesToDelete != null && dto.ImagesToDelete.Any())
                 {
                     foreach (var imageIdToDelete in dto.ImagesToDelete)
                     {
                         var image = product.Images.FirstOrDefault(i => i.Id == imageIdToDelete);
                         if (image != null)
                         {
-                            var fullPath = Path.Combine(webHostEnvironment.WebRootPath, image.ImageUrl.TrimStart('/'));
+                            var fullPath = Path.Combine(
+                                webHostEnvironment.WebRootPath,
+                                image.ImageUrl.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString())
+                            );
+
                             if (System.IO.File.Exists(fullPath))
                             {
                                 System.IO.File.Delete(fullPath);
                             }
+
                             unit.ImgRepository.Delete(image);
                         }
                     }
                 }
 
-                // 4. HANDLE NEW IMAGE ADDITIONS.
+                // -----------------------------------
+                // 3) Add new uploaded images
+                // -----------------------------------
                 if (dto.NewImages != null && dto.NewImages.Any())
                 {
-                    // FAILSAFE: Initialize the collection if it's null.
-                    if (product.Images == null)
-                    {
-                        product.Images = new List<productImage>();
-                    }
-
                     var folder = Path.Combine(webHostEnvironment.WebRootPath, "images/product");
                     Directory.CreateDirectory(folder);
 
@@ -192,73 +295,120 @@ namespace Duja.Controllers
                             await file.CopyToAsync(stream);
                         }
 
-                        product.Images.Add(new productImage { ImageUrl = relativePath });
+                        product.Images.Add(new productImage
+                        {
+                            ImageUrl = relativePath
+                        });
                     }
                 }
 
-                // 5. HANDLE VARIANT UPDATES (Add, Update, Delete).
-                if (dto.Variants != null)
+                // -----------------------------------
+                // 4) Parse variants JSON flexibly
+                // -----------------------------------
+                List<ProductVarientDto> incomingVariants = new();
+
+                if (!string.IsNullOrWhiteSpace(dto.VariantsINJSON))
                 {
-                    // FAILSAFE: Initialize the collection if it's null.
-                    // This is the most likely fix for your 500 error.
-                    if (product.Variants == null)
+                    try
                     {
-                        product.Variants = new List<ProductVariant>();
-                    }
+                        var raw = dto.VariantsINJSON.Trim();
 
-                    // This line is now safe from NullReferenceException
-                    var existingVariants = product.Variants.ToList();
-                    var incomingVariantIds = dto.Variants.Select(v => v.ID).ToHashSet();
-
-                    // Delete variants
-                    var variantsToDelete = existingVariants.Where(v => !incomingVariantIds.Contains(v.Id)).ToList();
-                    if (variantsToDelete.Any())
-                    {
-                        unit.ProductRepository.RemoveRange(variantsToDelete);
-                    }
-
-                    // Update existing and add new variants
-                    foreach (var vDto in dto.Variants)
-                    {
-                        var existingVariant = existingVariants.FirstOrDefault(v => v.Id == vDto.ID);
-                        if (existingVariant != null)
+                        var options = new System.Text.Json.JsonSerializerOptions
                         {
-                            // UPDATE
-                            existingVariant.SizeId = vDto.SizeID;
-                            existingVariant.ColorId = vDto.ColorID;
-                            existingVariant.StockQuantity = vDto.StockQuantity;
-                            existingVariant.Length = vDto.Length;
-                            existingVariant.Width = vDto.Width;
+                            PropertyNameCaseInsensitive = true
+                        };
+
+                        if (raw.StartsWith("["))
+                        {
+                            incomingVariants =
+                                System.Text.Json.JsonSerializer.Deserialize<List<ProductVarientDto>>(raw, options)
+                                ?? new List<ProductVarientDto>();
+                        }
+                        else if (raw.StartsWith("{"))
+                        {
+                            var singleVariant =
+                                System.Text.Json.JsonSerializer.Deserialize<ProductVarientDto>(raw, options);
+
+                            if (singleVariant != null)
+                            {
+                                incomingVariants.Add(singleVariant);
+                            }
                         }
                         else
                         {
-                            // ADD
-                            product.Variants.Add(new ProductVariant
+                            return BadRequest(new
                             {
-                                SizeId = vDto.SizeID,
-                                ColorId = vDto.ColorID,
-                                StockQuantity = vDto.StockQuantity,
-                                Length = vDto.Length,
-                                Width = vDto.Width
+                                message = "Invalid variants JSON format",
+                                raw = dto.VariantsINJSON
                             });
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(new
+                        {
+                            message = "Invalid variants JSON",
+                            raw = dto.VariantsINJSON,
+                            details = ex.Message
+                        });
+                    }
                 }
 
-                // 6. PERSIST all changes to the database.
+                // -----------------------------------
+                // 5) Sync variants (delete / update / add)
+                // -----------------------------------
+                var existingVariants = product.Variants.ToList();
+
+                var incomingExistingIds = incomingVariants
+                    .Where(v => v.Id > 0)
+                    .Select(v => v.Id)
+                    .ToHashSet();
+
+                // Delete variants that were removed from request
+                var variantsToDelete = existingVariants
+                    .Where(v => !incomingExistingIds.Contains(v.Id))
+                    .ToList();
+
+                foreach (var variantToDelete in variantsToDelete)
+                {
+                    unit.VariantRepository.Delete(variantToDelete);
+                }
+
+                // Update existing or add new
+                foreach (var vDto in incomingVariants)
+                {
+                    var existingVariant = existingVariants.FirstOrDefault(v => v.Id == vDto.Id);
+
+                    if (existingVariant != null)
+                    {
+                        // UPDATE existing variant using mapper
+                        mapper.Map(vDto, existingVariant);
+                    }
+                    else
+                    {
+                        // ADD new variant using mapper
+                        var newVariant = mapper.Map<ProductVariant>(vDto);
+                        product.Variants.Add(newVariant);
+                    }
+                }
+
+                // -----------------------------------
+                // 6) Save all changes
+                // -----------------------------------
                 await unit.saveAsync();
 
                 return Ok(new { message = "Product updated successfully." });
             }
             catch (Exception ex)
             {
-                // Remember to log the exception 'ex' with your logging service
                 Console.WriteLine(ex);
-                return StatusCode(500, "An internal server error occurred while updating the product.");
+                return StatusCode(500, new
+                {
+                    message = "An internal server error occurred while updating the product.",
+                    details = ex.Message
+                });
             }
-        }   //[EndpointSummary("Edit Specific Product")]
-
-
+        }
 
         [HttpDelete("{productid}/images")]
         [EndpointSummary("Delete specific product Image")]

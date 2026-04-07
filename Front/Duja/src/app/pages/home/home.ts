@@ -11,6 +11,7 @@ import { Router, RouterLink } from '@angular/router';
 import { Global } from '../../shared/global';
 import { environment } from '../../../environments/environment';
 import { CategorySlider } from "../../components/category-slider/category-slider";
+import { BrandInfoService } from '../../services/brand-info-service';
 
 @Component({
   selector: 'app-home',
@@ -29,7 +30,7 @@ export class Home implements OnInit, OnDestroy {
   FilteredProducts: IProduct[] = [];
   Categories: Icategory[] = [];
   brandAds: IBrandAD[] = [];
-
+  isloading = true ;
   searchTerm: string = '';
   selectedCategory: string = 'all';
 
@@ -39,10 +40,28 @@ export class Home implements OnInit, OnDestroy {
     private adservice: Ad,
     private categoryservice: CategoryService,
     private Cdr: ChangeDetectorRef,
+    public brandservice : BrandInfoService,
     public global: Global
   ) { }
 
+  loadBrandInfo(): void {
+    this.brandservice.getBrandInfo().subscribe({
+      next: () => {
+        this.isloading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load brand info', err);
+        this.isloading = false;
+      }
+    });
+  }
   ngOnInit(): void {
+      if (!this.brandservice.brandInfo()) {
+      this.loadBrandInfo();
+    } else {
+      this.isloading = false;
+    }
+ 
     this.loadData();
     this.startSlideshow();
   }
@@ -115,5 +134,16 @@ export class Home implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     this.searchTerm = input.value;
     this.filter();
+  }
+
+  scrollToCategories(){
+    const categorySection = document.getElementById('category_shop');
+    
+    if (categorySection) {
+      categorySection.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    } 
   }
 }

@@ -58,6 +58,67 @@ namespace Duja.Migrations
                     b.ToTable("BrandAds");
                 });
 
+            modelBuilder.Entity("Duja.Models.BrandInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BrandName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("InstagramUrl")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TikTokUrl")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("WhatsApp")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BrandInfo");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BrandName = "Duja",
+                            Description = "Discover the best products for your lifestyle.",
+                            Email = "",
+                            InstagramUrl = "https://www.instagram.com/duja_brand_/",
+                            Phone = "+2 010 2348 1375",
+                            TikTokUrl = "https://www.tiktok.com/@duja_brand_",
+                            WhatsApp = "+2 010 9676 8843"
+                        });
+                });
+
             modelBuilder.Entity("Duja.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -67,7 +128,6 @@ namespace Duja.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.PrimitiveCollection<string>("Images")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -234,19 +294,43 @@ namespace Duja.Migrations
                     b.Property<int>("ColorId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Length")
+                    b.Property<decimal?>("Hip")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("Inseam")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("Length")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
+                    b.Property<decimal?>("Shoulder")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("SizeId")
                         .HasColumnType("int");
+
+                    b.Property<decimal?>("Sleevelength")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("StockQuantity")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Width")
+                    b.Property<decimal?>("Thigh")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("Waist")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("Weight")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("bust")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");

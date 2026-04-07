@@ -15,6 +15,7 @@ export class Product {
   @Input() product: IProduct | undefined;
   @Output() deleteevent = new EventEmitter();
   
+  apiURL = environment.baseUrl;
   constructor(private route: Router, public global: Global) {
   }
   

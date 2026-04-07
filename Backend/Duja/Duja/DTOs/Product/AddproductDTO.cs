@@ -8,7 +8,7 @@ namespace Duja.DTOs.Product
         public string Description { get; set; }
         public List<IFormFile> NewImages { get; set; }
         public decimal Price { get; set; }
-        public List<AddvarientDTO> Variants { get; set; } = new List<AddvarientDTO>();
+        public String? VariantsINJSON { get; set; } 
         public int CategoryId { get; set; }
 
     }

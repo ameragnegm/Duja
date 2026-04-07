@@ -1,0 +1,111 @@
+<div class="brand-profile-page">
+  <div class="container-fluid px-3 px-md-4 px-lg-5">
+
+    <div class="brand-profile-card  ">
+
+        <div class="header-actions justify-content-end">
+          @if (!isEditMode && !isLoading) {
+            <button class="btn action-btn dark-btn" (click)="enableEdit()">
+              <i class="bi bi-pencil-square me-2"></i> Edit
+            </button>
+          }
+
+          @if (isEditMode) {
+            <div class="d-flex gap-2 flex-wrap justify-content-end">
+              <button class="btn action-btn light-btn" (click)="cancelEdit()" [disabled]="isSaving">
+                Cancel
+              </button>
+
+              <button class="btn action-btn dark-btn" (click)="saveChanges()" [disabled]="isSaving">
+                @if (!isSaving) {
+                  <span>
+                    <i class="bi bi-check2-circle me-2"></i>
+                    Save 
+                  </span>
+                } @else {
+                  <span>
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    Saving...
+                  </span>
+                }
+              </button>
+            </div>
+          }
+        </div>
+      <div class="brand-profile-header d-flex justify-content-end align-items-center">
+
+
+      </div>
+
+      @if (successMessage) {
+        <div class="alert alert-success custom-alert mt-3">
+          {{ successMessage }}
+        </div>
+      }
+
+      @if (errorMessage) {
+        <div class="alert alert-danger custom-alert mt-3">
+          {{ errorMessage }}
+        </div>
+      }
+
+      @if (isLoading) {
+        <div class="loading-box">
+          <div class="spinner-border text-dark" role="status"></div>
+          <p class="mt-3 mb-0 text-muted">Loading brand information...</p>
+        </div>
+      } @else {
+        <form [formGroup]="brandForm" class="brand-form mt-4">
+          <div class="row g-4">
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">Brand Name</label>
+              <input type="text" class="form-control custom-input" formControlName="brandName" />
+              @if (f['brandName'].touched && f['brandName'].invalid) {
+                <small class="text-danger">Brand name is required.</small>
+              }
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control custom-input" formControlName="email" />
+              @if (f['email'].touched && f['email'].invalid) {
+                <small class="text-danger">Please enter a valid email.</small>
+              }
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Description</label>
+              <textarea
+                rows="4"
+                class="form-control custom-input custom-textarea"
+                formControlName="description">
+              </textarea>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">Phone</label>
+              <input type="text" class="form-control custom-input" formControlName="phone" />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">WhatsApp</label>
+              <input type="text" class="form-control custom-input" formControlName="whatsApp" />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">Instagram URL</label>
+              <input type="text" class="form-control custom-input" formControlName="instagramUrl" />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">TikTok URL</label>
+              <input type="text" class="form-control custom-input" formControlName="tikTokUrl" />
+            </div>
+          </div>
+        </form>
+      }
+    </div>
+
+  </div>
+</div>

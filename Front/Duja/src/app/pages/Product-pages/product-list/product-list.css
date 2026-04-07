@@ -1,26 +1,30 @@
 .page-container {
-  padding: 2rem 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.filter-bar {
+  margin-bottom: 1.25rem;
 }
 
 .custom-input {
-  height: 50px; 
+  height: 50px;
   background-color: #fff;
+  transition: all 0.25s ease;
 }
 
 .custom-input:focus {
-  box-shadow: 0 0 0 4px rgba(0,0,0,0.1) !important; /* Soft glow instead of blue border */
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1) !important;
   transform: translateY(-2px);
 }
 
-.product-grid {
-  display: grid;
-  margin: 0;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 2rem; 
-  padding-bottom: 3rem;
+.add-btn {
+  min-height: 50px;
 }
 
-.grid-item {
+.product-item {
+  display: block;
+  width: 100%;
   animation: fadeUp 0.5s ease-out forwards;
 }
 
@@ -37,7 +41,11 @@
   height: 100px;
 }
 
-/* 5. ANIMATIONS */
+.load-more-btn {
+  min-width: 160px;
+}
+
+/* animation */
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -46,5 +54,41 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* tablet */
+@media (max-width: 991.98px) {
+ 
+  .filter-bar {
+    margin-bottom: 1rem;
+  }
+}
+
+/* mobile */
+@media (max-width: 575.98px) {
+ 
+  .filter-bar {
+    margin-bottom: 0.9rem;
+  }
+
+  .custom-input {
+    height: 46px;
+    font-size: 0.95rem;
+  }
+
+  .add-btn {
+    min-height: 46px;
+    font-size: 0.95rem;
+  }
+
+  .empty-state {
+    min-height: 300px;
+    padding: 1rem 0;
+  }
+
+  .icon-box {
+    width: 82px;
+    height: 82px;
   }
 }

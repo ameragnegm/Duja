@@ -36,7 +36,11 @@ export class ProducDetails implements OnInit {
   allColors: Icolor[] = [];
   message !: ApiResponce;
   @Output() deleteevent = new EventEmitter();
-  constructor(private cartservice : CartService, public global: Global, private router: Router, private productservice: ProductService, private route: ActivatedRoute, private cdr: ChangeDetectorRef) {
+  constructor(private cartservice: CartService, public global: Global, private router: Router, private productservice: ProductService, private route: ActivatedRoute, private cdr: ChangeDetectorRef) {
+  }
+  getSelectedColorName(): string {
+    const selected = this.currentColors?.find(c => c.id === this.selectedColorId);
+    return selected ? selected.name : '';
   }
   ngOnInit(): void {
     this.productID = this.route.snapshot.paramMap.get('id');
@@ -65,30 +69,47 @@ export class ProducDetails implements OnInit {
       )
     }
   }
-  getAvailableColorsforSelectedSize() {
-    // 1. Reset state when size changes
-    this.selectedColorId = null;
-    this.selectedVariant = undefined; // Clear the variant
-    this.quantityToBuy = 1;
-
-    if (!this.selectedSizeId || !this.product || !this.product.variants) {
-      this.AvailableColorsID = [];
-      return;
-    }
-
-    // 2. Get variants for this size
-    // Ensure we compare numbers to numbers by using == (or ensuring selectedSizeId is a number)
-    this.currentVariants = this.product.variants.filter(v => v.sizeID == this.selectedSizeId);
-
-    // 3. Get unique Color IDs
-    this.AvailableColorsID = this.currentVariants.map(v => v.colorID);
-    const uniqueColorIds = [...new Set(this.AvailableColorsID)];
-
-    // 4. FIX IS HERE: Correctly filter the master color list
-    this.currentColors = this.allColors.filter(c => uniqueColorIds.includes(c.id));
-
-    console.log("Available Colors:", this.currentColors);
+  hasVariantValue(value: any): boolean {
+    return value !== null && value !== undefined && value !== '';
   }
+
+  getVariantInfoItems(): { label: string; value: any }[] {
+    if (!this.selectedVariant) return [];
+
+    return [
+      { label: 'Stock', value: this.selectedVariant.stockQuantity },
+      { label: 'Length', value: this.selectedVariant.length },
+      { label: 'Shoulder', value: this.selectedVariant.shoulder },
+      { label: 'Bust', value: this.selectedVariant.bust },
+      { label: 'Sleeve Length', value: this.selectedVariant.sleevelength },
+      { label: 'Waist', value: this.selectedVariant.waist },
+      { label: 'Hip', value: this.selectedVariant.hip },
+      { label: 'Inseam', value: this.selectedVariant.inseam },
+      { label: 'Thigh', value: this.selectedVariant.thigh },
+      { label: 'Weight', value: this.selectedVariant.weight },
+      { label: 'Note', value: this.selectedVariant.note }
+    ].filter(item => this.hasVariantValue(item.value));
+  }
+
+  getAvailableColorsforSelectedSize() {
+  this.selectedColorId = null;
+  this.selectedVariant = undefined;
+  this.quantityToBuy = 1;
+
+  if (!this.selectedSizeId || !this.product || !this.product.variants) {
+    this.AvailableColorsID = [];
+    this.currentColors = [];
+    return;
+  }
+
+  this.currentVariants = this.product.variants.filter(v => v.sizeID == this.selectedSizeId);
+
+  this.AvailableColorsID = this.currentVariants.map(v => v.colorID);
+  const uniqueColorIds = [...new Set(this.AvailableColorsID)];
+
+  this.currentColors = this.allColors.filter(c => uniqueColorIds.includes(c.id));
+  this.cdr.detectChanges();
+}
   getProductAvailableSizes() {
     if (!this.product || !this.product.variants) return;
 
@@ -105,7 +126,9 @@ export class ProducDetails implements OnInit {
     return size ? size.name : '';
   }
   onDeleteProduct(productID: number | undefined) {
-    if (productID) {
+    var choosenvalue = confirm("Are you sure you want to delete?");
+
+    if (productID && choosenvalue) {
       this.productservice.DeleteProduct(String(productID)).subscribe({
         next: (data) => {
           this.message = data;
@@ -147,19 +170,18 @@ export class ProducDetails implements OnInit {
     }
   }
   onColorChange() {
-    console.log(this.selectedColorId);
-    console.log(this.selectedSizeId);
+  this.selectedVariant = this.currentVariants.find(
+    v => v.colorID == this.selectedColorId && v.sizeID == this.selectedSizeId
+  );
 
-    this.selectedVariant = this.currentVariants.find(v => v.colorID == this.selectedColorId && v.sizeID == this.selectedSizeId);
-
-    console.log(this.selectedVariant);
-
-    this.quantityToBuy = 1;
-  }
+  this.quantityToBuy = 1;
+  this.cdr.detectChanges();
+}
+  
   goBack() {
     this.global.goBack();
-  }AddToCartandView() {
-  this.cartservice.addToCart(this.product, this.selectedVariant, this.quantityToBuy);
+  } AddToCartandView() {
+    this.cartservice.addToCart(this.product, this.selectedVariant, this.quantityToBuy);
 
     const goToCart = confirm(
       'Item added to cart.\n\nPress OK → Go to Cart\nPress Cancel → Continue Shopping'

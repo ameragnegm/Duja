@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Duja.DTOs;
 using Duja.DTOs.Category;
 using Duja.DTOs.Color;
 using Duja.DTOs.Employee;
@@ -17,10 +18,16 @@ namespace Duja.Mapping
         {
             CreateMap<RegisterDto, User>().ForMember(d => d.UserName,
                 o => o.MapFrom(s => string.IsNullOrWhiteSpace(s.UserName) ? s.Email : s.UserName)).ForMember(d => d.PasswordHash, o => o.Ignore());
-            CreateMap<UpdateProductDTO, Product>().ReverseMap();
+            CreateMap<UpdateProductDTO, Product>()
+                      .ForMember(dest => dest.Images, opt => opt.Ignore())
+                      .ForMember(dest => dest.Variants, opt => opt.Ignore());
+            CreateMap<ProductVarientDto, ProductVariant>()
+          .ForMember(dest => dest.Id, opt => opt.Ignore()) // important for update safety
+          .ForMember(dest => dest.ProductId, opt => opt.Ignore())
+          .ForMember(dest => dest.Product, opt => opt.Ignore());
             CreateMap<ProductDTO, Product>().ReverseMap();
             CreateMap<ProductVariant, ProductVarientDto>().ReverseMap();
-            CreateMap<AddproductDTO, Product>().ForMember(dest => dest.Images, opt => opt.Ignore());
+            CreateMap<AddproductDTO, Product>().ReverseMap();
             CreateMap<AddvarientDTO, ProductVariant>().ReverseMap();
             CreateMap<productImage, Product>().ReverseMap();
             CreateMap<productImage, ProductImageDTO>().ReverseMap();
@@ -74,7 +81,9 @@ namespace Duja.Mapping
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ReverseMap();
 
+            CreateMap<BrandInfo,BrandDTO>().ReverseMap();
         }
+
 
     }
 

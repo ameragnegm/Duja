@@ -1,0 +1,49 @@
+<div class="custom-modal-backdrop" (click)="close()">
+  <div class="custom-modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header-row">
+      <h4 class="mb-0">Manage Colors</h4>
+      <button type="button" class="close-btn" (click)="close()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <form [formGroup]="form" class="mb-4">
+      <label class="form-label">Color Name</label>
+      <div class="d-flex gap-2">
+        <input type="text" class="form-control" formControlName="name">
+        <button type="button" class="btn btn-dark" (click)="save()">
+          {{ editingId ? 'Update' : 'Add' }}
+        </button>
+      </div>
+    </form>
+
+    <div class="modal-items-list">
+      @if (isLoading) {
+        <div class="d-flex align-items-center gap-2 text-muted">
+          <div class="spinner-border spinner-border-sm" role="status"></div>
+          <span>Loading colors...</span>
+        </div>
+      } @else if (errorMessage) {
+        <p class="text-danger mb-0">{{ errorMessage }}</p>
+      } @else if (hasLoaded && colors.length > 0) {
+        @for (item of colors; track item.id) {
+          <div class="modal-item-row">
+            <span>{{ item.name }}</span>
+
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-sm btn-outline-dark" (click)="edit(item)">
+                <i class="bi bi-pencil-square"></i>
+              </button>
+
+              <button type="button" class="btn btn-sm btn-outline-danger" (click)="delete(item.id)">
+                <i class="bi bi-trash3"></i>
+              </button>
+            </div>
+          </div>
+        }
+      } @else if (hasLoaded && colors.length === 0) {
+        <p class="text-muted mb-0">No colors found.</p>
+      }
+    </div>
+  </div>
+</div>

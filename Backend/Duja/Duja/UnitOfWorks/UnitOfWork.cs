@@ -17,9 +17,30 @@ namespace Duja.UnitOfWorks
         EmployeeRepository employeeRepository;
         BrandAdRepository brandAdRepository;
         GovernorateRepository governorateRepository;
+        BrandRepository brandINFORepository;
+        VariantRepository variantRepository;
+
         public UnitOfWork(DujaContext context)
         {
             this.context = context;
+        }
+        public BrandRepository BrandInfoRepository
+        {
+            get
+            {
+                if (brandINFORepository == null)
+                    brandINFORepository = new BrandRepository(context);
+                return brandINFORepository;
+            }
+        }
+        public VariantRepository VariantRepository
+        {
+            get
+            {
+                if (variantRepository == null)
+                    variantRepository = new VariantRepository(context);
+                return variantRepository;
+            }
         }
         public GovernorateRepository GovernorateRepository
         {

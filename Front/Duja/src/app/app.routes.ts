@@ -15,6 +15,9 @@ import { SignUp } from './pages/Auth/sign-up/sign-up';
 import { Home } from './pages/home/home';
 import { ManageAds } from './pages/Ads/manage-ads/manage-ads';
 import { Management } from './pages/Management/management/management';
+import { PaymentCallback } from './components/payment-callback/payment-callback';
+import { BrandProfile } from './pages/Brand/brand-profile/brand-profile';
+import { Categorycrudmanage } from './components/categorycrudmanage/categorycrudmanage';
 
 export const routes: Routes = [
     // --- PUBLIC PAGES ---
@@ -34,12 +37,15 @@ export const routes: Routes = [
         children: [
             // When user goes to /manage, redirect to /manage/products
             { path: '', redirectTo: 'products', pathMatch: 'full' },
+            { path: "brand", component: BrandProfile },
 
             // The Tabs Content
             { path: "products", component: ProductList },
             { path: "ads", component: ManageAds },
             { path: "employees", component: EmpList },
             { path: "orders", component: OrderList },
+
+            { path: 'payment-callback', component: PaymentCallback },
 
             // Forms (Add/Edit) - Loading inside the dashboard layout
             { path: "products/add", component: ProductForm },

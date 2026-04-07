@@ -27,6 +27,13 @@
                             </div>
 
                             <div class="col-12">
+                                <label class="form-label small fw-bold text-muted">EMAIL ADDRESS (Required for Payment)</label>
+                                <input type="email" class="form-control" placeholder="example@email.com"
+                                    formControlName="email" [class.is-invalid]="isFieldInvalid('email')">
+                                <div class="invalid-feedback">Valid email address is required.</div>
+                            </div>
+
+                            <div class="col-12">
                                 <label class="form-label small fw-bold text-muted">STREET ADDRESS</label>
                                 <input type="text" class="form-control" placeholder="Building, Street, Apt..."
                                     formControlName="address" [class.is-invalid]="isFieldInvalid('address')">
@@ -40,23 +47,25 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold text-muted">GOVERNORATE</label>
-                                <div class="input-group has-validation">
-                                    <select class="form-select" formControlName="governorateId"
-                                        [class.is-invalid]="isFieldInvalid('governorateId')">
-                                        <option [ngValue]="null" disabled>Select Governorate</option>
-                                        @for (gov of currentGovernorates; track gov.id) {
-                                        <option [value]="gov.id">
-                                            {{ gov.governorateName }} (+{{ gov.deliveryPrice }} EGP)
-                                        </option>
-                                        }
-                                    </select>
-                                    <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal"
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="form-label small fw-bold text-muted mb-0">GOVERNORATE</label>
+                                    <button class="btn btn-sm btn-light text-secondary py-0 px-2" type="button" data-bs-toggle="modal"
                                         data-bs-target="#manageGovModal" title="Manage Areas">
                                         <i class="bi bi-gear-fill"></i>
                                     </button>
-                                    <div class="invalid-feedback">Please select your location.</div>
                                 </div>
+                                <select class="form-select" formControlName="governorateId"
+                                    [class.is-invalid]="isFieldInvalid('governorateId')">
+                                    <option [ngValue]="null" disabled>Select Governorate</option>
+                                    @for (gov of currentGovernorates; track gov.id) {
+                                    <option [value]="gov.id">
+                                        {{ gov.governorateName }} (+{{ gov.deliveryPrice }} EGP)
+                                    </option>
+                                    }
+                                </select>
+                                @if(isFieldInvalid('governorateId')) {
+                                    <div class="invalid-feedback d-block">Please select your location.</div>
+                                }
                             </div>
                         </div>
 
@@ -117,33 +126,50 @@
 
                         <hr class="text-muted opacity-25 my-4">
 
-                        <hr class="text-muted opacity-25 my-4">
-
                         <h5 class="fw-bold mb-4 text-secondary">Payment Method</h5>
 
-                        <!-- Paymob (Cards + Wallet) -->
                         <div class="card mb-3 shadow-sm cursor-pointer"
-                            [class.border-primary]="checkoutForm.get('paymentMethod')?.value === 'paymob'"
-                            [class.bg-primary-subtle]="checkoutForm.get('paymentMethod')?.value === 'paymob'"
-                            (click)="checkoutForm.patchValue({ paymentMethod: 'paymob' })">
+                            [class.border-primary]="checkoutForm.get('paymentMethod')?.value === 'card'"
+                            [class.bg-primary-subtle]="checkoutForm.get('paymentMethod')?.value === 'card'"
+                            (click)="checkoutForm.patchValue({ paymentMethod: 'card' })">
 
                             <div class="card-body d-flex align-items-center p-3">
                                 <div class="form-check">
                                     <input class="form-check-input fs-5" type="radio" formControlName="paymentMethod"
-                                        value="paymob" id="paymobMethod">
+                                        value="card" id="paymobCardMethod">
                                 </div>
-                                <label for="paymobMethod" class="form-check-label ms-3 w-100 cursor-pointer">
+                                <label for="paymobCardMethod" class="form-check-label ms-3 w-100 cursor-pointer">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <span class="fw-bold text-dark"> Card / Wallet</span>
+                                        <span class="fw-bold text-dark"> Credit / Debit Card</span>
                                     </div>
                                     <div class="small text-muted mt-1">
-                                        Pay using bank card or mobile wallet through Paymob.
+                                        Pay securely using your bank card through Paymob.
                                     </div>
                                 </label>
                             </div>
                         </div>
 
-                        <!-- Instapay (manual transfer) -->
+                        <div class="card mb-3 shadow-sm cursor-pointer"
+                            [class.border-primary]="checkoutForm.get('paymentMethod')?.value === 'wallet'"
+                            [class.bg-primary-subtle]="checkoutForm.get('paymentMethod')?.value === 'wallet'"
+                            (click)="checkoutForm.patchValue({ paymentMethod: 'wallet' })">
+
+                            <div class="card-body d-flex align-items-center p-3">
+                                <div class="form-check">
+                                    <input class="form-check-input fs-5" type="radio" formControlName="paymentMethod"
+                                        value="wallet" id="paymobWalletMethod">
+                                </div>
+                                <label for="paymobWalletMethod" class="form-check-label ms-3 w-100 cursor-pointer">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold text-dark"> Mobile Wallet</span>
+                                    </div>
+                                    <div class="small text-muted mt-1">
+                                        Pay using Vodafone Cash, Orange Cash, etc.
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
                         <div class="card mb-3 shadow-sm cursor-pointer"
                             [class.border-primary]="checkoutForm.get('paymentMethod')?.value === 'instapay'"
                             [class.bg-primary-subtle]="checkoutForm.get('paymentMethod')?.value === 'instapay'"
@@ -219,9 +245,8 @@
         </div>
 
     </div>
-
-  
 </div>
+
 <div class="modal fade" id="manageGovModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content rounded-4 border-0 shadow">
@@ -299,7 +324,6 @@
                         </tbody>
                     </table>
                 </div>
-
             </div>
         </div>
     </div>

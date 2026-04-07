@@ -41,7 +41,7 @@ export class Checkout implements OnInit {
     private cartService: CartService,
     private payService: PayService,
     private orderService: OrderService,
-    private authService :AuthService ,
+    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -50,22 +50,27 @@ export class Checkout implements OnInit {
     this.cartItems = this.cartService.getCartItems();
     this.cartTotal = this.cartService.getSubtotal();
 
+    // If cart is empty, redirect out early
+    if (this.cartItems.length === 0) {
+      this.router.navigate(['/products']);
+      return;
+    }
+
     // ---------- MAIN CHECKOUT FORM ----------
     this.checkoutForm = this.fb.group({
       fullName: ['', Validators.required],
-      phone: [
-        '',
-        [Validators.required, Validators.pattern('^01[0-2,5]{1}[0-9]{8}$')]
-      ],
+      // NEW: Paymob strictly requires an email address to process payments!
+      email: ['', [Validators.required, Validators.email]], 
+      phone: ['', [Validators.required, Validators.pattern('^01[0-2,5]{1}[0-9]{8}$')]],
       address: ['', Validators.required],
       city: ['', Validators.required],
       governorateId: [null, Validators.required],
 
-      // full / deposit (how much to pay now)
+      // full / deposit
       onlinePaymentType: ['full', Validators.required],
 
-      // paymob / instapay / cashOnDelivery ... (which channel)
-      paymentMethod: ['paymob', Validators.required]
+      // card / wallet / instapay
+      paymentMethod: ['card', Validators.required] 
     });
 
     // ---------- GOVERNORATE MODAL FORM ----------
@@ -74,7 +79,6 @@ export class Checkout implements OnInit {
       deliveryPrice: [null, [Validators.required, Validators.min(0)]]
     });
 
-    // Load governorates list
     this.loadGovernorates();
 
     // Recalculate delivery cost when governorate changes
@@ -83,70 +87,8 @@ export class Checkout implements OnInit {
       this.deliveryCost = selectedGov ? selectedGov.deliveryPrice : 0;
       this.cdr.detectChanges();
     });
-
-    // If cart is empty, redirect
-    if (this.cartItems.length === 0) {
-      this.router.navigate(['/products']);
-    }
   }
-  private startPaymobPayment(
-  orderId: number,
-  amountToPay: number,
-  formValues: any
-) {
-  const amountCents = Math.round(amountToPay * 100);
 
-  // find governorate name from selected id (nice for billing street/city)
-  const selectedGov = this.currentGovernorates.find(
-    g => g.id == formValues.governorateId
-  );
-  const govName = selectedGov?.governorateName || '';
-
-  const fullName: string = formValues.fullName || '';
-  const nameParts = fullName.trim().split(' ');
-  const firstName = nameParts[0] || 'Customer';
-  const lastName =
-    nameParts.length > 1 ? nameParts.slice(1).join(' ') : 'Customer';
-
-  const startPaymentReq = {
-    merchantOrderId: orderId.toString(),
-    amountCents: amountCents,
-
-    // 1 = card, 2 = wallet (your backend logic)
-    method: formValues.paymentMethod === 'wallet' ? 2 : 1,
-
-    // wallet-specific
-    walletPhone: formValues.paymentMethod === 'wallet' ? formValues.phone : null,
-
-    // billing info coming directly from customer's input:
-    firstName: firstName,
-    lastName: lastName,
-    email: formValues.email,
-    phoneNumber: formValues.phone,
-
-    // you can split address however you like; simplest:
-    street: formValues.address,
-    city: formValues.city || govName,
-    country: 'EG'
-  };
-
-  this.payService.startPayment(startPaymentReq)
-    .subscribe({
-      next: res => {
-        this.isSubmitting = false;
-        const redirectUrl = res.checkoutUrl;
-        if (redirectUrl) {
-          window.location.href = redirectUrl;
-        } else {
-          console.error('startPayment: no redirect URL', res);
-        }
-      },
-      error: err => {
-        this.isSubmitting = false;
-        console.error('startPayment error', err);
-      }
-    });
-}
   loadGovernorates() {
     this.governateservice.getAll().subscribe(data => {
       this.currentGovernorates = data;
@@ -159,8 +101,12 @@ export class Checkout implements OnInit {
     return !!(field && field.invalid && (field.dirty || field.touched));
   }
 
+  // ---------- STEP 1: SAVE ORDER TO YOUR DB ----------
   placeOrder() {
-    if (this.checkoutForm.invalid) return;
+    if (this.checkoutForm.invalid) {
+      this.checkoutForm.markAllAsTouched();
+      return;
+    }
 
     const formValues = this.checkoutForm.value;
     const totalOrderAmount = this.cartTotal + this.deliveryCost;
@@ -170,11 +116,10 @@ export class Checkout implements OnInit {
     const remaining = isDeposit ? this.cartTotal : 0;
 
     const orderPayload: IAddOrder = {
-      userId: 'user-id-placeholder',
+      userId: 'user-id-placeholder', // Replace with real user ID if logged in
       ownerName: formValues.fullName,
       ownerPhone: formValues.phone,
       address: `${formValues.address}, ${formValues.city}`,
-      // <-- now using the chosen payment method
       paymentMethod: formValues.paymentMethod,
       deliveryPrice: this.deliveryCost,
       totalAmount: totalOrderAmount,
@@ -186,54 +131,96 @@ export class Checkout implements OnInit {
       }))
     };
 
-    console.log('Mapped Payload:', orderPayload);
-
     this.isSubmitting = true;
 
+    // Save order to your database first
     this.orderService.AddOrder(orderPayload).subscribe({
-      next: () => {
-        this.isSubmitting = false;
-        this.cartService.clearCart();
-        this.router.navigate(['/manage/orders']);
+      next: (res: any) => {
+        // Assume your backend returns the newly created Order ID in the response.
+        // If it doesn't, we fallback to a timestamp so Paymob doesn't crash.
+        const dbOrderId = res?.id?.toString() || res?.orderId?.toString() || Date.now().toString();
+
+        // Check if the user wants to pay via Paymob (Card or Wallet)
+        if (formValues.paymentMethod === 'card' || formValues.paymentMethod === 'wallet') {
+          
+          // Call the Paymob logic
+          this.startPaymobPayment(dbOrderId, paid, formValues);
+          
+        } else {
+          // It's Instapay or Cash on Delivery. No Paymob needed!
+          this.isSubmitting = false;
+          this.cartService.clearCart();
+          this.router.navigate(['/manage/orders']); // Redirect to success page
+        }
       },
       error: err => {
         this.isSubmitting = false;
-        console.error(err);
+        console.error('Failed to save order to database', err);
+        alert('Failed to place order. Please try again.');
       }
     });
   }
 
-  // ---------- GOVERNORATE MODAL ACTIONS ----------
+  private startPaymobPayment(orderId: string, amountToPay: number, formValues: any) {
+    const amountCents = Math.round(amountToPay * 100);
 
+    const fullName: string = formValues.fullName || '';
+    const nameParts = fullName.trim().split(' ');
+    const firstName = nameParts[0] || 'Customer';
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : 'Customer';
+
+    const startPaymentReq = {
+      merchantOrderId: orderId,
+      amountCents: amountCents,
+      method: formValues.paymentMethod === 'wallet' ? 2 : 1, 
+      walletPhone: formValues.paymentMethod === 'wallet' ? formValues.phone : '',
+      firstName: firstName,
+      lastName: lastName,
+      email: formValues.email, 
+      phoneNumber: formValues.phone,
+    };
+
+    this.payService.startPayment(startPaymentReq).subscribe({
+        next: (res) => {
+          this.isSubmitting = false;
+          
+          if (res.checkoutUrl) {
+            this.cartService.clearCart(); 
+            window.location.href = res.checkoutUrl;
+          } else {
+            console.error('startPayment: no redirect URL', res);
+            // ROLLBACK: Backend returned success, but no URL was found
+            this.rollbackOrder(orderId, 'Payment initiated, but no checkout URL was returned.');
+          }
+        },
+        error: (err) => {
+          console.error('startPayment error', err);
+          // ROLLBACK: The API crashed (e.g., 500 error for invalid wallet number)
+          this.rollbackOrder(orderId, 'Failed to connect to the payment gateway. Please verify your details.');
+        }
+      });
+  }
+  // ---------- GOVERNORATE MODAL ACTIONS ----------
   saveGovernorate() {
     if (this.govForm.invalid) return;
-
     const newGov = {
       governorateName: this.govForm.value.name,
       deliveryPrice: this.govForm.value.deliveryPrice
     };
-
     this.governateservice.add(newGov).subscribe(() => {
       this.govForm.reset();
       this.loadGovernorates();
     });
   }
 
-  startEdit(id: number) {
-    this.editingGovId = id;
-  }
-
-  cancelEdit() {
-    this.editingGovId = null;
-    this.loadGovernorates();
-  }
+  startEdit(id: number) { this.editingGovId = id; }
+  cancelEdit() { this.editingGovId = null; this.loadGovernorates(); }
 
   updateGovernorate(gov: any) {
     const updatedPayload = {
       governorateName: gov.governorateName,
       deliveryPrice: gov.deliveryPrice
     };
-
     this.governateservice.update(gov.id, updatedPayload).subscribe(() => {
       this.editingGovId = null;
       this.loadGovernorates();
@@ -242,9 +229,23 @@ export class Checkout implements OnInit {
 
   deleteGovernorate(id: number) {
     if (confirm('Are you sure you want to delete this area?')) {
-      this.governateservice.delete(id).subscribe(() => {
-        this.loadGovernorates();
-      });
+      this.governateservice.delete(id).subscribe(() => this.loadGovernorates());
     }
+  }
+
+  // NEW HELPER FUNCTION: Deletes the order if payment fails to initialize
+  private rollbackOrder(orderId: string, errorMessage: string) {
+    // Note: If your backend requires a number, use Number(orderId)
+    this.orderService.DeleteOrder(Number(orderId)).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        alert(errorMessage + ' The pending order has been cancelled.');
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        console.error('Failed to delete orphaned order', err);
+        alert(errorMessage);
+      }
+    });
   }
 }

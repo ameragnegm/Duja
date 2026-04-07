@@ -1,0 +1,76 @@
+.brand-profile-page {
+  padding: 2rem 0 3rem;
+}
+
+.brand-profile-card {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  border: 1px solid #ececec;
+}
+
+.brand-profile-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.action-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  width: auto !important;
+  min-width: 150px;
+  border-radius: 999px;
+  padding: 0.75rem 1.4rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dark-btn {
+  background: linear-gradient(90deg, #1f2937, #0f172a);
+  color: #fff;
+  border: none;
+}
+.form-label{
+  color: rgb(119, 131, 131);
+}
+
+.light-btn {
+  background: #f3f4f6;
+  color: #111827;
+  border: none;
+}
+
+@media (max-width: 767.98px) {
+  .brand-profile-header,
+  .header-actions,
+  .action-group {
+    justify-content: stretch;
+  }
+
+  .action-group {
+    width: 50%;
+    flex-direction: row;
+
+  }
+
+  .action-btn {
+    width: 20% !important;
+  }
+}

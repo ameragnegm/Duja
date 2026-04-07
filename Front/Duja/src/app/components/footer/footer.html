@@ -1,58 +1,84 @@
-<footer class="mt-5 border-top border-dark bg-black text-light">
-  <div class="container-fluid px-5 py-5">
-    <div class="row align-items-center gy-4">
+<footer class="footer-wrapper mt-0">
+  <div class="container py-5">
+    <div class="row align-items-center gy-5">
 
       <!-- LOGO -->
-      <div class="col-md-4 text-center text-md-start ">
-        <img src="assets/duja_white_transparent.png"
-             alt="Duja Logo"
-             class="img-fluid"
-             style="max-height:25vh">
+      <div class="col-12 col-md-4 text-center text-md-start">
+        <img
+          src="assets/duja_white_transparent.png"
+          alt="Duja Logo"
+          class="footer-logo img-fluid"
+        >
       </div>
 
+      @if (brandservice.brandInfo(); as brandInfo) {
+
       <!-- FOLLOW US -->
-      <div class="col-md-4 text-center">
-        <h6 class="text-uppercase fw-semibold mb-3 text-secondary">
-          Follow Us
-        </h6>
+      <div class="col-12 col-md-4 text-center">
+        <h6 class="footer-heading">Follow Us</h6>
 
-        <div class="d-flex justify-content-center gap-4 fs-3">
-          <a href="https://www.instagram.com/duja_brand_/"
-             target="_blank"
-             class="footer-icon text-light">
-            <i class="bi bi-instagram"></i>
-          </a>
+        <div class="footer-socials">
+          @if (brandInfo.instagramUrl) {
+            <a
+              [href]="brandInfo.instagramUrl"
+              target="_blank"
+              class="footer-icon"
+              aria-label="Instagram"
+            >
+              <i class="bi bi-instagram"></i>
+            </a>
+          }
 
-          <a href="https://www.tiktok.com/@duja_brand_"
-             target="_blank"
-             class="footer-icon text-light">
-            <i class="bi bi-tiktok"></i>
-          </a>
+          @if (brandInfo.tikTokUrl) {
+            <a
+              [href]="brandInfo.tikTokUrl"
+              target="_blank"
+              class="footer-icon"
+              aria-label="TikTok"
+            >
+              <i class="bi bi-tiktok"></i>
+            </a>
+          }
         </div>
       </div>
 
       <!-- CONTACT -->
-      <div class="col-md-4 text-center text-md-center">
-        <h6 class="text-uppercase fw-semibold mb-3 text-secondary">
-          Contact Us
-        </h6>
+      <div class="col-12 col-md-4 text-center">
+        <h6 class="footer-heading">Contact Us</h6>
 
-        <div class="d-flex justify-content-center  gap-3 small">
-          <i class="bi bi-phone text-light fw-bold "></i>
+        <div class="footer-contact">
 
-          <a href="tel:+201023481375" class="footer-link text-light fw-bold">
-            +2 010 2348 1375
-          </a>
+          @if (brandInfo.phone) {
+            <a
+              [href]="'https://wa.me/' + cleanWhatsApp(brandInfo.whatsApp)"
+              target="_blank"
+              class="footer-link"
+            >
+              <i class="bi bi-phone me-2"></i>
+              {{ brandInfo.phone }}
+            </a>
+          }
 
-          <span class="text-secondary fw-semibold">|</span>
+          @if (brandInfo.whatsApp) {
+            <a
+              [href]="'https://wa.me/' + cleanWhatsApp(brandInfo.whatsApp)"
+              target="_blank"
+              class="footer-link"
+            >
+              <i class="bi bi-whatsapp me-2"></i>
+              {{ brandInfo.whatsApp }}
+            </a>
+          }
 
-          <a href="tel:+201096768843" class="footer-link text-light fw-bold">
-            +2 010 9676 8843
-          </a>
         </div>
       </div>
 
-    </div>
+      } @else {
+        <div class="col-12 col-md-8 text-center text-md-start">
+          <p class="text-secondary mb-0">Loading brand info...</p>
+        </div>
+      }
 
+    </div>
   </div>
 </footer>

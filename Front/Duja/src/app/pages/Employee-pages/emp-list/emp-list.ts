@@ -87,6 +87,3 @@ export class EmpList implements OnInit {
   }
 }
 
-function forEach(p0: boolean) {
-  throw new Error('Function not implemented.');
-}

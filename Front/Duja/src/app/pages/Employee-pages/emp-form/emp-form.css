@@ -1,125 +1,203 @@
-/* -- Host & Container Styling -- */
-:host {
-  display: block;
-  padding: 2rem 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+.employee-form-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
 }
 
-.form-container {
-  max-width: 800px;
+.employee-form-shell {
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 2.5rem;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.09);
-  border: 1px solid #e9ecef;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 28px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
 }
 
-/* -- Typography -- */
-h2 {
-  text-align: center;
+.employee-form-header {
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.header-kicker {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+}
+
+.header-title {
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 800;
+  color: #111827;
+}
+
+.employee-form-body {
+  padding: 1.5rem;
+}
+
+.form-section {
+  background: #fff;
+  border: 1px solid #eef2f7;
+  border-radius: 22px;
+  padding: 1.25rem;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04);
+}
+
+.form-section + .form-section {
+  margin-top: 1.25rem;
+}
+
+.section-head {
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.section-subtitle {
+  font-size: 0.92rem;
+  color: #6b7280;
+}
+
+.modern-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 0.45rem;
+}
+
+.modern-input {
+  min-height: 50px;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  box-shadow: none;
+  padding-inline: 0.95rem;
+}
+
+.modern-input:focus {
+  border-color: #111827;
+  box-shadow: 0 0 0 0.15rem rgba(17, 24, 39, 0.08);
+}
+
+textarea.modern-input {
+  min-height: 120px;
+}
+
+.field-error {
+  margin-top: 0.4rem;
+  font-size: 0.82rem;
+  color: #dc2626;
   font-weight: 600;
-  color: #212529;
-  margin-bottom: 2rem;
-}
-
-.form-label {
-  font-weight: 500;
-  color: #495057;
-}
-
-/* -- Input & Select Styling -- */
-.form-control,
-.form-select {
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  border-color: #ced4da;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-/* Add a subtle blue glow on focus to match Bootstrap's primary color */
-.form-control:focus,
-.form-select:focus {
-  border-color: #86b7fe;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-/* Style for invalid fields */
-.form-control.ng-invalid.ng-touched,
-.form-select.ng-invalid.ng-touched {
-  border-color: #dc3545; /* Bootstrap's danger color */
-}
-
-/* -- Button Styling -- */
-.btn-primary {
-  padding: 0.8rem;
-  font-size: 1.1rem;
-  font-weight: 500;
-  border-radius: 8px;
-  margin-top: 1rem;
-}/* Add this to emp-form.css */
-
-.back-arrow {
-    font-size: 2rem; 
-    font-weight: bold;
-    color: #555;
-    
-    cursor: pointer; 
-    
-    /* Positioning */
-    display: block;
-    margin-bottom: 10px;
-    width: fit-content; 
-}
-
-.back-arrow:hover {
-    color: #000; 
-}
-
-/* This is your existing container */
-.form-container {
-    position: relative;
-    padding-top: 20px;
-}
-.form-container {
-    position: relative;
-    padding: 2rem; 
 }
 
 .back-button-circle {
-    position: absolute;
-    top: 24px;
-    left: 24px;
-
-    /* Shape and Size */
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    
-    /* Style */
-    border: none; 
-    background-color: #ffffff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); 
-    
-    /* Center the icon inside */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    /* Interaction */
-    cursor: pointer;
-    transition: all 0.2s ease-out;
+  width: 46px;
+  height: 46px;
+  border: none;
+  border-radius: 50%;
+  background: #f3f4f6;
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
-/* Style for the SVG icon inside the button */
-.back-button-circle svg {
-    width: 24px; 
-    height: 24px;
-    color: #333;
-}
-
-/* Hover Effect */
 .back-button-circle:hover {
-    background-color: #f5f5f5; 
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+  background: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.back-button-circle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.submit-row {
+  margin-top: 1.5rem;
+}
+
+.btn-black {
+  background: #111827;
+  color: #fff;
+  border: 0;
+}
+
+.btn-black:hover {
+  background: #000;
+  color: #fff;
+}
+
+.modern-submit-btn {
+  width: 100%;
+  min-height: 54px;
+  border-radius: 18px;
+  font-weight: 800;
+  font-size: 1rem;
+  box-shadow: 0 16px 30px rgba(17, 24, 39, 0.18);
+}
+
+.modern-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+@media (max-width: 991px) {
+  .employee-form-shell {
+    border-radius: 22px;
+  }
+
+  .employee-form-header {
+    padding: 1.25rem 1rem 0.85rem;
+  }
+
+  .employee-form-body {
+    padding: 1rem;
+  }
+
+  .form-section {
+    border-radius: 18px;
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 575px) {
+  .employee-form-page {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .employee-form-shell {
+    border-radius: 18px;
+  }
+
+  .employee-form-header {
+    padding: 1rem 0.9rem 0.75rem;
+  }
+
+  .employee-form-body {
+    padding: 0.9rem;
+  }
+
+  .form-section {
+    padding: 0.9rem;
+    border-radius: 16px;
+  }
+
+  .modern-input {
+    min-height: 46px;
+    border-radius: 14px;
+  }
+
+  .modern-submit-btn {
+    min-height: 50px;
+    border-radius: 16px;
+  }
 }

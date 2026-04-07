@@ -1,29 +1,96 @@
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { CartService } from '../../services/cart-service';
 import { RouterLink } from '@angular/router';
-import { ILoginedUser } from '../../models/Auth/logineduser.model';
-import { AuthService } from '../../services/auth-service';
-import { IProduct } from '../../models/Product/product.model';
-import { ProductService } from '../../services/product-service';
+import { CommonModule } from '@angular/common'; // Optional, but good if you need ngClass/ngIf
+import { FormsModule } from '@angular/forms'; // REQUIRED for [(ngModel)] in the search dropdowns!
+
 import { environment } from '../../../environments/environment';
+import { ILoginedUser } from '../../models/Auth/logineduser.model';
+import { IProduct } from '../../models/Product/product.model';
+
+import { AuthService } from '../../services/auth-service';
+import { CartService } from '../../services/cart-service';
+import { ProductService } from '../../services/product-service';
+import { CategoryService } from '../../services/category-service'; // Need this to fetch categories
+import { Icategory } from '../../models/Categories/category.model';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink],
+  standalone: true, // Assuming you are using standalone components
+  imports: [RouterLink, CommonModule, FormsModule], 
   templateUrl: './header.html',
   styleUrl: './header.css'
 })
 export class Header implements OnInit, OnDestroy {
+  // ==========================================
+  // 1. GLOBAL VARIABLES & CONFIG
+  // ==========================================
   readonly apiBaseUrl = environment.baseUrl;
   isScrolled: boolean = false;
   isMenuCollapsed = true;
-  AllProducts: IProduct[] = [];
-  constructor(private productservice: ProductService, private authservice: AuthService, private cartService: CartService , private cdr : ChangeDetectorRef) {}
 
+  // ==========================================
+  // 2. DATA ARRAYS
+  // ==========================================
+  AllProducts: IProduct[] = [];
+  Categories: Icategory[] = []; // Needed for the category dropdown in search
+
+  // ==========================================
+  // 3. AUTH & CART VARIABLES
+  // ==========================================
+  user!: ILoginedUser | null;
+  isLoggedIn = false;
+  cartCount: number = 0;
+
+  // ==========================================
+  // 4. SEARCH UI VARIABLES
+  // ==========================================
+  isSearchActive: boolean = false;
+  searchQuery: string = '';
+  selectedSearchCategory: string = 'all';
+  selectedSort: string = 'newest';
+  searchResults: IProduct[] = [];
+
+  constructor(
+    private productservice: ProductService,
+    private categoryservice: CategoryService, // Inject Category Service
+    private authservice: AuthService,
+    private cartService: CartService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  // ==========================================
+  // 5. LIFECYCLE HOOKS (OnInit, OnDestroy)
+  // ==========================================
+  ngOnInit(): void {
+    // Scroll Listener
+    window.addEventListener('scroll', this.onScroll, { passive: true });
+    this.onScroll();
+
+    // Cart Listener
+    this.cartService.cart$.subscribe(items => {
+      this.cartCount = items.reduce((total, item) => total + item.quantity, 0);
+    });
+
+    // Auth Listener
+    this.authservice.user$.subscribe(u => {
+      this.user = u;
+      this.isLoggedIn = !!u;
+    });
+
+    // Pre-load categories so the search dropdown has data!
+    this.loadCategories();
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('scroll', this.onScroll);
+  }
+
+  // ==========================================
+  // 6. SCROLL & MENU LOGIC
+  // ==========================================
   private onScroll = () => {
     const nav = document.getElementById('navbar');
     if (!nav) return;
-
     if (window.scrollY > 20) nav.classList.add('scrolled');
     else nav.classList.remove('scrolled');
   };
@@ -32,85 +99,113 @@ export class Header implements OnInit, OnDestroy {
   onWindowScroll() {
     this.isScrolled = window.scrollY > 100;
   }
-  ngOnDestroy(): void {
-    window.removeEventListener('scroll', this.onScroll);
-  }
-  searchResults: any[] = [];
-  searchQuery: string = '';
-  isSearchActive: boolean = false; toggleSearch() {
-    this.isSearchActive = !this.isSearchActive;
 
-    // Clear data when closing
-    if (!this.isSearchActive) {
-      this.searchResults = [];
-      this.searchQuery = '';
-    }
-  }
-  // 2. The Search Logic
-  openSearch() {
-    this.loadProducts();
-    this.isSearchActive = true;
-    this.searchQuery = '';
+  toggleMenu() {
+    this.isMenuCollapsed = !this.isMenuCollapsed;
   }
 
-  // 2. The Filter Logic
-  onSearch(event: any) {
-    const query = event.target.value.toLowerCase();
-    this.searchQuery = query;
-
-    if (query.trim() === '') {
-      // If input is empty, show ALL products again
-      this.searchResults = [...this.AllProducts];
-    } else {
-      // Filter based on name (or other fields)
-      this.searchResults = this.AllProducts.filter(product =>
-        product.name.toLowerCase().includes(query)
-      );
-    }
-  }
-
-  closeSearch() {
-    this.isSearchActive = false;
-  }
-  // Clear search when clicking a result
-  clearSearch() {
-    this.searchQuery = '';
-    this.searchResults = [];
-  }
-  user !: ILoginedUser | null;
-  isLoggedIn = false;
-  
-  cartCount: number = 0;
+  // ==========================================
+  // 7. AUTH LOGIC
+  // ==========================================
   hasRole(role: string): boolean {
     return this.authservice.hasRole(role);
   }
-  ngOnInit(): void {
-    window.addEventListener('scroll', this.onScroll, { passive: true });
-    this.onScroll();
 
-    this.cartService.cart$.subscribe(items => {
-      this.cartCount = items.reduce((total, item) => total + item.quantity, 0);
-    });
-    this.authservice.user$.subscribe(u => {
-      this.user = u;
-      this.isLoggedIn = !!u;
-    });
+  logout() {
+    this.authservice.logout();
   }
+
+  // ==========================================
+  // 8. DATA LOADING (API CALLS)
+  // ==========================================
   loadProducts() {
     this.productservice.getProducts().subscribe({
       next: (data) => {
         this.AllProducts = data;
         this.searchResults = [...this.AllProducts];
         this.cdr.detectChanges();
-
       }
-    })
+    });
   }
 
-  logout() {
-    this.authservice.logout();
+  loadCategories() {
+    this.categoryservice.getcategories().subscribe({
+      next: (data) => {
+        this.Categories = data;
+      }
+    });
   }
-  toggleMenu() {
-    this.isMenuCollapsed = !this.isMenuCollapsed;
+
+  // ==========================================
+  // 9. SEARCH & FILTER LOGIC
+  // ==========================================
+  openSearch() {
+    this.loadProducts(); // Load products when they open the search bar
+    this.isSearchActive = true;
+    this.searchQuery = '';
+    this.applyFilters(); // Reset everything
+  }
+
+  closeSearch() {
+    this.isSearchActive = false;
+  }
+
+  toggleSearch() {
+    if (this.isSearchActive) {
+      this.closeSearch();
+    } else {
+      this.openSearch();
+    }
+  }
+
+  clearSearch() {
+    this.searchQuery = '';
+    this.searchResults = [...this.AllProducts];
+  }
+
+  resetSearch() {
+    this.searchQuery = '';
+    this.selectedSearchCategory = 'all';
+    this.selectedSort = 'newest';
+    this.applyFilters();
+  }
+
+  onSearch(event: any) {
+    this.searchQuery = event.target.value;
+    this.applyFilters();
+  }
+
+  // The Master Filter Function
+  applyFilters() {
+    // 1. Start with all products
+    let filtered = [...this.AllProducts];
+
+    // 2. Filter by Search Text
+    if (this.searchQuery.trim() !== '') {
+      const lowerQuery = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(p =>
+        p.name.toLowerCase().includes(lowerQuery) ||
+        p.description.toLowerCase().includes(lowerQuery)
+      );
+    }
+
+    // 3. Filter by Category
+    if (this.selectedSearchCategory !== 'all') {
+      filtered = filtered.filter(p => p.categoryId === Number(this.selectedSearchCategory));
+    }
+
+    // 4. Sort the Results
+    if (this.selectedSort === 'newest') {
+      filtered.sort((a, b) => b.id - a.id); // Assuming higher ID = newer
+    } else if (this.selectedSort === 'oldest') {
+      filtered.sort((a, b) => a.id - b.id);
+    } else if (this.selectedSort === 'price-low') {
+      filtered.sort((a, b) => a.price - b.price);
+    } else if (this.selectedSort === 'price-high') {
+      filtered.sort((a, b) => b.price - a.price);
+    }
+
+    // Update the screen
+    this.searchResults = filtered;
   }
 }

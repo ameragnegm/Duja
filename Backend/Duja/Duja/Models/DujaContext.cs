@@ -27,6 +27,19 @@ namespace Duja.Models
             {
                 entity.HasIndex(p => new { p.ProductId, p.SizeId, p.ColorId }).IsUnique();
             });
-         }
+            modelBuilder.Entity<BrandInfo>().HasData(
+               new BrandInfo
+               {
+                   Id = 1,
+                   BrandName = "Duja",
+                   Description = "Discover the best products for your lifestyle.",
+                   Phone = "+2 010 2348 1375",
+                   WhatsApp = "+2 010 9676 8843",
+                   Email = "",
+                   InstagramUrl = "https://www.instagram.com/duja_brand_/",
+                   TikTokUrl = "https://www.tiktok.com/@duja_brand_"
+               }
+           );
+        }
     }
 }

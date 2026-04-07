@@ -1,40 +1,54 @@
-<div class="container-fluid" style="min-height: 80vh;">
+<div class="manage-page">
+  <div class="manage-nav-shell">
+    <div class="manage-nav" #navContainer>
 
-    <div class="d-flex justify-content-center mt-5 ">
+      <ul class="manage-nav-list">
+        @for (tab of visibleTabs; track tab.link) {
+          <li class="nav-item">
+            <a
+              [routerLink]="tab.link"
+              routerLinkActive="active"
+              class="nav-link manage-nav-link d-flex align-items-center"
+            >
+              <i [class]="tab.icon + ' me-2'"></i>
+              <span>{{ tab.label }}</span>
+            </a>
+          </li>
+        }
 
-        <ul class="nav nav-pills gap-2 p-2 bg-white rounded shadow-sm border d-inline-flex flex-wrap">
+        @if (overflowTabs.length > 0) {
+          <li class="nav-item more-menu" [class.open]="isMoreOpen">
+            <button
+              type="button"
+              class="nav-link manage-nav-link more-btn d-flex align-items-center"
+              (click)="toggleMoreMenu()"
+            >
+              <i class="bi bi-three-dots me-2"></i>
+            </button>
 
-            <li class="nav-item">
-                <a routerLink="products" routerLinkActive="active" class="nav-link d-flex align-items-center px-4">
-                    <i class="bi bi-box-seam-fill me-2"></i> Products
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a routerLink="orders" routerLinkActive="active"
-                    class="nav-link d-flex align-items-center px-4 position-relative">
-                    <i class="bi bi-cart-check-fill me-2"></i> Orders
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a routerLink="ads" routerLinkActive="active" class="nav-link d-flex align-items-center px-4">
-                    <i class="bi bi-megaphone-fill me-2"></i> Ads & Banners
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a routerLink="employees" routerLinkActive="active" class="nav-link d-flex align-items-center px-4">
-                    <i class="bi bi-people-fill me-2"></i> Employees
-                </a>
-            </li>
-
-        </ul>
+            @if (isMoreOpen) {
+              <div class="more-dropdown shadow-lg">
+                @for (tab of overflowTabs; track tab.link) {
+                  <a
+                    [routerLink]="tab.link"
+                    routerLinkActive="active"
+                    class="more-dropdown-item"
+                    (click)="closeMoreMenu()"
+                  >
+                    <i [class]="tab.icon + ' me-2'"></i>
+                    <span>{{ tab.label }}</span>
+                  </a>
+                }
+              </div>
+            }
+          </li>
+        }
+      </ul>
 
     </div>
+  </div>
 
-    <div class="p-4">
-        <router-outlet></router-outlet>
-    </div>
-
+  <div class="manage-content">
+    <router-outlet></router-outlet>
+  </div>
 </div>

@@ -21,8 +21,8 @@ export class Global {
     if (imageUrl.startsWith('http')) return imageUrl; // Already a full URL
     
     // Ensure one slash between base and path
-    const cleanPath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
-    return `${this.apiBaseUrl}${cleanPath}`;
+    const cleanPath = `${this.apiBaseUrl}/${imageUrl}`;
+    return cleanPath;
   }
 
   /**
