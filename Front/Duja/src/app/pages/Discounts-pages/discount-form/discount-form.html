@@ -1,0 +1,151 @@
+<div class="discount-form-page py-4 py-lg-5">
+  <div class="container">
+    <div class="discount-form-shell">
+
+      <div class="discount-form-header">
+        <div class="d-flex align-items-center gap-3">
+          <button type="button" (click)="goBack()" class="back-button-circle">
+            <i class="bi bi-arrow-left"></i>
+          </button>
+
+          <div>
+            <p class="header-kicker mb-1">Discount Management</p>
+            <h2 class="header-title mb-0">{{ isEditMode ? 'Edit Discount' : 'Add New Discount' }}</h2>
+          </div>
+        </div>
+      </div>
+
+      @if (isLoading) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-dark"></div>
+      </div>
+      } @else {
+      <form [formGroup]="discountForm" (ngSubmit)="onSubmit()" class="discount-form-body">
+
+        <div class="form-section">
+          <div class="row g-4">
+            <div class="col-12 col-md-6">
+              <label class="form-label modern-label">Discount Name</label>
+              <input type="text" class="form-control modern-input" formControlName="name">
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label modern-label">Percentage</label>
+              <input type="number" class="form-control modern-input" formControlName="percentage">
+            </div>
+
+            <div class="col-12">
+              <label class="form-label modern-label">Description</label>
+              <textarea class="form-control modern-input modern-textarea" rows="3"
+                formControlName="description"></textarea>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label modern-label">Start Date</label>
+              <input type="date" class="form-control modern-input" formControlName="startDate">
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label modern-label">End Date</label>
+              <input type="date" class="form-control modern-input" formControlName="endDate">
+            </div>
+<div class="col-12">
+  <label class="form-label modern-label">Select Products</label>
+
+  <div class="picker-toolbar mb-3">
+    <div class="picker-search-box">
+      <i class="bi bi-search"></i>
+      <input
+        type="text"
+        class="form-control modern-input"
+        placeholder="Search products..."
+        (input)="onSearchProducts($event)">
+    </div>
+
+    <select class="form-select modern-input picker-category-filter" (change)="onCategoryFilter($event)">
+      <option value="all">All Categories</option>
+      @for (category of categories; track category.id) {
+      <option [value]="category.id">{{ category.name }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="picker-topbar mb-3">
+    <label class="select-all-box">
+      <input
+        type="checkbox"
+        [checked]="isAllFilteredSelected()"
+        (change)="toggleSelectAllFiltered($event)">
+      <span>Select all shown</span>
+    </label>
+
+    <span class="selected-count-badge">
+      {{ getSelectedProductsCount() }} selected
+    </span>
+  </div>
+
+  <div class="product-list-picker">
+    @for (product of filteredProducts; track product.id) {
+    <label class="product-list-row" [class.selected]="isProductSelected(product.id)">
+      <div class="product-list-check">
+        <input
+          type="checkbox"
+          [checked]="isProductSelected(product.id)"
+          (change)="toggleProductSelection(product.id)">
+      </div>
+
+      <div class="product-list-image-wrap">
+        <img
+          [src]="getProductPreviewImage(product)"
+          [alt]="product.name"
+          class="product-list-image">
+      </div>
+
+      <div class="product-list-main">
+        <div class="product-list-name">{{ product.name }}</div>
+        <div class="product-list-meta">
+          @if (product.category?.name) {
+          <span class="dot-separator">•</span>
+          <span>{{ product.category.name }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="product-list-price">
+        {{ product.price | currency:'EGP ' }}
+      </div>
+    </label>
+    }
+
+    @if (filteredProducts.length === 0) {
+    <div class="no-products-found">
+      <i class="bi bi-search"></i>
+      <p class="mb-0">No products match your search or category.</p>
+    </div>
+    }
+  </div>
+
+  @if(discountForm.get('productIds')?.invalid && discountForm.get('productIds')?.touched){
+  <div class="field-error mt-2">Please select at least one product.</div>
+  }
+</div>
+            <div class="col-12">
+              <div class="form-check form-switch mt-2">
+                <input class="form-check-input" type="checkbox" formControlName="isActive" id="isActive">
+                <label class="form-check-label fw-semibold" for="isActive">Active</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="submit-row">
+          <button type="submit" class="btn-black modern-submit-btn" [disabled]="discountForm.invalid">
+            {{ isEditMode ? 'Update Discount' : 'Save Discount' }}
+          </button>
+        </div>
+
+      </form>
+      }
+    </div>
+  </div>
+</div>

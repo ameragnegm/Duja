@@ -18,6 +18,8 @@ import { Management } from './pages/Management/management/management';
 import { PaymentCallback } from './components/payment-callback/payment-callback';
 import { BrandProfile } from './pages/Brand/brand-profile/brand-profile';
 import { Categorycrudmanage } from './components/categorycrudmanage/categorycrudmanage';
+import { DiscountList } from './pages/Discounts-pages/discount-list/discount-list';
+import { DiscountForm } from './pages/Discounts-pages/discount-form/discount-form';
 
 export const routes: Routes = [
     // --- PUBLIC PAGES ---
@@ -38,7 +40,7 @@ export const routes: Routes = [
             // When user goes to /manage, redirect to /manage/products
             { path: '', redirectTo: 'products', pathMatch: 'full' },
             { path: "brand", component: BrandProfile },
-
+            { path: "discounts", component: DiscountList },
             // The Tabs Content
             { path: "products", component: ProductList },
             { path: "ads", component: ManageAds },
@@ -50,12 +52,19 @@ export const routes: Routes = [
             // Forms (Add/Edit) - Loading inside the dashboard layout
             { path: "products/add", component: ProductForm },
             { path: "products/edit/:id", component: ProductForm },
+
+
+            { path: "discounts/add", component: DiscountForm },
+            { path: "discounts/edit/:id", component: DiscountForm },
+            
             { path: "employees/add", component: EmpForm },
             { path: "employees/edit/:id", component: EmpForm },
+            
             { path: "orders/add", component: OrderForm },
             { path: "orders/edit/:id", component: OrderForm },
 
             // Details inside dashboard
+            
             { path: "employees/:id", component: EmpDatails },
             { path: "orders/:id", component: OrderDetails }
         ]

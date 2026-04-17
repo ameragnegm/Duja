@@ -1,0 +1,93 @@
+<div class="discount-page py-4 py-lg-5">
+  <div class="container">
+
+    <div class="toolbar-card mb-4">
+      <div class="toolbar-row">
+        <div class="search-box flex-grow-1">
+          <i class="bi bi-search"></i>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search discounts..."
+            (input)="onSearch($event)">
+        </div>
+
+        <a routerLink="/manage/discounts/add" class="btn btn-black add-btn">
+          <i class="bi bi-plus-lg"></i>
+          <span>New Discount</span>
+        </a>
+      </div>
+    </div>
+
+    @if (isLoading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-dark"></div>
+    </div>
+    } @else {
+
+    @if (filteredDiscounts.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i class="bi bi-percent"></i>
+      </div>
+      <h5 class="fw-bold text-dark mb-1">No Discounts Found</h5>
+      <p class="text-muted mb-0">Create your first discount to get started.</p>
+    </div>
+    } @else {
+    <div class="row g-4">
+      @for (discount of filteredDiscounts; track discount.id) {
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="discount-card">
+          <div class="discount-card-header">
+            <div>
+              <h5 class="discount-title mb-1">{{ discount.name }}</h5>
+              <p class="discount-desc mb-0">{{ discount.description || 'No description' }}</p>
+            </div>
+
+            <span class="status-badge" [class.active]="getStatus(discount) === 'Active'"
+              [class.scheduled]="getStatus(discount) === 'Scheduled'"
+              [class.inactive]="getStatus(discount) === 'Inactive'"
+              [class.expired]="getStatus(discount) === 'Expired'">
+              {{ getStatus(discount) }}
+            </span>
+          </div>
+
+          <div class="discount-body">
+            <div class="info-row">
+              <span class="info-label">Percentage</span>
+              <span class="info-value">{{ discount.percentage }}%</span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">Products</span>
+              <span class="info-value">{{ getProductsCount(discount) }}</span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">Start</span>
+              <span class="info-value">{{ discount.startDate | date:'mediumDate' }}</span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">End</span>
+              <span class="info-value">{{ discount.endDate | date:'mediumDate' }}</span>
+            </div>
+          </div>
+
+          <div class="discount-actions">
+            <a [routerLink]="['/manage/discounts/edit', discount.id]" class="btn-action btn-edit" title="Edit">
+              <i class="bi bi-pencil-fill"></i>
+            </a>
+
+            <button class="btn-action btn-delete" (click)="onDelete(discount.id)" title="Delete">
+              <i class="bi bi-trash-fill"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    }
+    }
+  </div>
+</div>

@@ -15,7 +15,13 @@ namespace Duja.Repositories
         {
             return  await context.Set<Product>().Include(p => p.Variants).Include(p=> p.Images).ToListAsync();
         }
- 
+
+        public async Task<List<Product>> GetProductsByIds(List<int> ids)
+        {
+            return await context.Products
+                .Where(p => ids.Contains(p.Id))
+                .ToListAsync();
+        }
         public async  Task<Product> getProductbyVariantId(int variantId)
         {
             var variant = await context.Variants.Include(v => v.Product)

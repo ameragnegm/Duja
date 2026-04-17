@@ -19,10 +19,22 @@ namespace Duja.UnitOfWorks
         GovernorateRepository governorateRepository;
         BrandRepository brandINFORepository;
         VariantRepository variantRepository;
+        DiscountRepository discountRepository;
+
 
         public UnitOfWork(DujaContext context)
         {
             this.context = context;
+        }
+
+        public DiscountRepository DiscountRepository
+        {
+            get
+            {
+                if (discountRepository == null)
+                    discountRepository = new DiscountRepository(context);
+                return discountRepository;
+            }
         }
         public BrandRepository BrandInfoRepository
         {

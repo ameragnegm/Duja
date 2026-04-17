@@ -22,7 +22,8 @@ export class Management {
     { label: 'Brand', link: 'brand', icon: 'bi bi-gear-fill' },
     { label: 'Products', link: 'products', icon: 'bi bi-box-seam-fill' },
     { label: 'Orders', link: 'orders', icon: 'bi bi-cart-check-fill' },
-    { label: 'Ads & Banners', link: 'ads', icon: 'bi bi-megaphone-fill' },
+    { label: 'Discounts', link: 'discounts', icon: 'bi bi-percent' },
+    { label: 'Ads ', link: 'ads', icon: 'bi bi-megaphone-fill' },
     { label: 'Employees', link: 'employees', icon: 'bi bi-people-fill' }
   ];
 

@@ -2,6 +2,7 @@
 using Duja.DTOs;
 using Duja.DTOs.Category;
 using Duja.DTOs.Color;
+using Duja.DTOs.Discounts;
 using Duja.DTOs.Employee;
 using Duja.DTOs.Order;
 using Duja.DTOs.Product;
@@ -82,6 +83,13 @@ namespace Duja.Mapping
                 .ReverseMap();
 
             CreateMap<BrandInfo,BrandDTO>().ReverseMap();
+
+            CreateMap<Discount, DiscountDTO>()
+                .ForMember(dest => dest.ProductIds,opt => opt.MapFrom(src => src.DiscountProducts.Select(dp => dp.ProductId)));
+
+            CreateMap<CreateDiscount, Discount>()
+                .ForMember(dest => dest.DiscountProducts, opt => opt.Ignore());
+
         }
 
 
